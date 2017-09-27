@@ -12,8 +12,8 @@ INSTALL_LIB_PATH = /usr/lib/
 
 #Compiler settings
 CC=gcc
-CFLAGS=-c -Wall -ggdb -std=c11
-LDFLAGS=-ggdb
+CFLAGS=-c -Wall -ggdb -std=c11 -I/usr/local/Cellar/sdl2/2.0.6/include/
+LDFLAGS=-ggdb -I/usr/local/Cellar/sdl2/2.0.6/include/ -L/usr/local/Cellar/sdl2/2.0.6/lib/ -lsdl2
 
 #Rules to find source code - NOTE: Look for a better way to scan directories. Nonrecursive works but is a bit ugly
 SOURCES=$(shell find src/ -type f -name '*.c')

@@ -7,6 +7,24 @@ typedef struct {
 	uint8_t* ram;
 	uint8_t* vram;
 	uint8_t* topram;
+
+	uint8_t p1;
+	uint8_t sb;
+	uint8_t sc;
+
+	//Should be reset on write
+	uint8_t div;
+
+	uint8_t tima;
+	uint8_t tma;
+	uint8_t tac;
+
+	uint8_t lcdc;
+	uint8_t stat;
+	uint8_t scy;
+	uint8_t scx;
+
+	uint8_t intflag;
 } memory;
 
 void memory_init(memory* mem, uint8_t* rom);

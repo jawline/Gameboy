@@ -30,8 +30,37 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 	} else if (off < MAIN_RAM_ECHO) {
 		return &mem->ram[off - MAIN_RAM_END];
 	} else if (off < END_UNUSED_IO) {
-		printf("Not implemented yet %x\n", off);
-		return 0;
+
+		switch (off) {
+			case 0xFF00:
+				return &mem->p1;
+			
+			/**
+			 * Serial Data Registers
+			 */
+			case 0xFF01:
+				return &mem->sb;
+			case 0xFF02:
+				return &mem->sc;
+
+			/**
+			 * Interrupts Flag
+			 */
+			case 0xFF0F:
+				return &mem->intflag;
+			case 0xFF40:
+				return &mem->lcdc;
+			case 0xFF41:
+				return &mem->stat;
+			case 0xFF42:
+				return &mem->scy;
+			case 0xFF43:
+				return &mem->scx;
+			default:
+				printf("Bad Interrupt Register: %x\n", off);
+				return 0;
+		}
+
 	} else if (off <= 0xFFFF) {
 		return &mem->topram[off - END_UNUSED_IO];
 	}
