@@ -28,8 +28,10 @@ uint8_t view_init(view_t* view) {
 }
 
 uint8_t view_render_tiles(view_t* view, cpu_state* s, int offx, int offy) {
+
 	for (int x = 0; x < 32; x++) {
 		for (int y = 0; y < 32; y++) {
+
 			SDL_Rect base;
 			
 			base.x = offx + (8 * x);

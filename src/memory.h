@@ -24,6 +24,17 @@ typedef struct {
 	uint8_t scy;
 	uint8_t scx;
 
+	uint8_t ly;
+	uint8_t lyc;
+
+	uint8_t bgp;
+	uint8_t obp0;
+	uint8_t obp1;
+
+	uint8_t nr50;
+	uint8_t nr51;
+	uint8_t nr52;
+
 	uint8_t intflag;
 } memory;
 

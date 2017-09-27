@@ -2,8 +2,10 @@
 #include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void memory_init(memory* mem, uint8_t* rom) {
+	memset(mem, 0, sizeof(memory));
 	mem->rom = rom;
 	mem->ram = malloc(8192);
 	mem->vram = malloc(8192);
@@ -48,6 +50,14 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 			 */
 			case 0xFF0F:
 				return &mem->intflag;
+
+			case 0xFF24:
+				return &mem->nr50;
+			case 0xFF25:
+				return &mem->nr51;
+			case 0xFF26:
+				return &mem->nr52;
+
 			case 0xFF40:
 				return &mem->lcdc;
 			case 0xFF41:
@@ -56,6 +66,16 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 				return &mem->scy;
 			case 0xFF43:
 				return &mem->scx;
+			case 0xFF44:
+				return &mem->ly;
+			case 0xFF45:
+				return &mem->lyc;
+			case 0xFF47:
+				return &mem->bgp;
+			case 0xFF48:
+				return &mem->obp0;
+			case 0xFF49:
+				return &mem->obp1;
 			default:
 				printf("Bad Interrupt Register: %x\n", off);
 				return 0;

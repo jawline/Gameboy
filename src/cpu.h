@@ -33,7 +33,12 @@ typedef enum {
 	LD_C_B = 0x48,
 	LD_C_C = 0x49,
 	LD_C_D = 0x4A,
+
 	LDH_REF_n_A = 0xE0,
+	LDH_REF_A_n = 0xF0,
+
+	LD_REF_HL_n = 0x36,
+
 	LD_REF_HL_L = 0x75,
 	LD_REF_HL_C = 0x71,
 	LD_REF_HL_D = 0x72,
@@ -41,6 +46,7 @@ typedef enum {
 	LD_REF_HL_H = 0x74,
 	LD_L_REF_HL = 0x6E,
 	LDD_REF_HL_A = 0x32,
+	
 	SUB_A_B = 0x90,
 	SUB_A_C = 0x91,
 	SUB_A_D = 0x92,
@@ -49,16 +55,19 @@ typedef enum {
 	SUB_A_L = 0x95,
 	SUB_A_A = 0x97,
 	SUB_A_REF_HL = 0x96,
+
 	INC_L = 0x2C,
 	INC_B = 0x4,
 	INC_D = 0x14,
 	INC_H = 0x24,
+	
 	DEC_BC = 0x0B,
 	DEC_H = 0x25,
 	DEC_E = 0x1D,
 	DEC_D = 0x15,
 	DEC_B = 0x05,
 	DEC_C = 0xD,
+	
 	LDI_REF_HL_A = 0x22,
 	ADD_HL_DE = 0x19,
 	INC_BC = 0x3,
@@ -66,6 +75,7 @@ typedef enum {
 	JR_NZ_n = 0x20,
 	XOR_A = 0xAF,
 	LOGICAL_NOT_A = 0x2F,
+	CP_n = 0xFE,
 	DISABLE_INTERRUPTS = 0xF3,
 	ENABLE_INTERRUPTS = 0xFB,
 	RST_38 = 0xFF
