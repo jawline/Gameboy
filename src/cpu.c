@@ -13,11 +13,6 @@ const uint8_t PO_FLAG = 0x1 << 2; //Parity or offset
 const uint8_t SUBTRACT_FLAG = 0x1 << 2;
 const uint8_t CARRY_FLAG = 0x0;
 
-void dhlt() {
-	printf("Debug Halt\n");
-	exit(0);
-}
-
 void cpu_init(cpu_state* state) {
 	state->registers.pc = START_PC;
 	state->registers.sp = START_STACK;
@@ -201,7 +196,7 @@ void cpu_xor_reg(cpu_state* state, uint8_t* reg1, uint8_t* reg2) {
 	inc_pc(state, 1);
 }
 
-bool ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
+void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
 	uint8_t tested = *reg & (0x1 << bit);
 	printf("Tested bit R %x\n", tested);
 
@@ -569,6 +564,7 @@ bool cpu_step(cpu_state* state) {
 		case LOGICAL_NOT_A:
 			cpu_lnot_reg(state, &state->registers.a);
 			break;
+
 		case ENABLE_INTERRUPTS:
 			cpu_setinterrupts(state, 1);
 			break;
