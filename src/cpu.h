@@ -60,6 +60,11 @@ typedef enum {
 	INC_B = 0x4,
 	INC_D = 0x14,
 	INC_H = 0x24,
+
+	INC_BC = 0x3,
+	INC_DE = 0x13,
+	INC_HL = 0x23,
+	INC_SP = 0x33,
 	
 	DEC_BC = 0x0B,
 	DEC_H = 0x25,
@@ -78,10 +83,10 @@ typedef enum {
 	EXT_OP = 0xCB,
 
 	LD_REF_nn_A = 0xEA,
+	LD_REF_nn_SP = 0x08,
 	
 	LDI_REF_HL_A = 0x22,
 	ADD_HL_DE = 0x19,
-	INC_BC = 0x3,
 	JP_NN = 0xC3,
 	JR_NZ_n = 0x20,
 	XOR_A = 0xAF,

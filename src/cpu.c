@@ -156,6 +156,13 @@ void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
 	inc_pc(state, 3);
 }
 
+void cpu_load_addr_16_reg16(cpu_state* state, uint16_t* reg) {
+	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
+	mem_set16(&state->mem, addr, *reg);
+	do_flags(state, *reg);
+	inc_pc(state, 3);
+}
+
 void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 	uint8_t val = mem_get(&state->mem, state->registers.pc + 1);
 	mem_set(&state->mem, state->registers.hl, val);
@@ -373,6 +380,15 @@ bool cpu_step(cpu_state* state) {
 		case INC_BC:
 			cpu_addfix16(state, 1, &state->registers.bc);
 			break;
+		case INC_DE:
+			cpu_addfix16(state, 1, &state->registers.de);
+			break;
+		case INC_HL:
+			cpu_addfix16(state, 1, &state->registers.hl);
+			break;
+		case INC_SP:
+			cpu_addfix16(state, 1, &state->registers.sp);
+			break;
 		case INC_B:
 			cpu_addfix8(state, 1, &state->registers.b);
 			break;
@@ -554,6 +570,9 @@ bool cpu_step(cpu_state* state) {
 			break;
 		case LD_REF_nn_A:
 			cpu_load_addr_16_reg(state, &state->registers.a);
+			break;
+		case LD_REF_nn_SP:
+			cpu_load_addr_16_reg16(state, &state->registers.sp);
 			break;
 		case XOR_A:
 			cpu_xor_reg(state, &state->registers.a, &state->registers.a);
