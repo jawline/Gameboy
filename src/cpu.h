@@ -98,8 +98,10 @@ typedef enum {
 	JP_NN = 0xC3,
 	JR_NZ_n = 0x20,
 	XOR_A = 0xAF,
-	LOGICAL_NOT_A = 0x2F,
+
+	CPL_A = 0x2F,
 	CP_n = 0xFE,
+	
 	DISABLE_INTERRUPTS = 0xF3,
 	ENABLE_INTERRUPTS = 0xFB,
 	RST_38 = 0xFF
