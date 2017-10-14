@@ -110,7 +110,13 @@ void cpu_mov8(cpu_state* state, uint8_t* to, uint8_t val) {
 
 void cpu_sub8(cpu_state* state, uint8_t* lhs, uint8_t rhs) {
 	*lhs -= rhs;
-	do_flags(state, !(*lhs), 1, 0, 0);
+	do_flags(state, !(*lhs), 1, 0, 0); //TODO: Carry flags
+	inc_pc(state, 1);
+}
+
+void cpu_dec8(cpu_state* state, uint8_t* reg) {
+	*reg -= 1;
+	do_flags(state, !(*reg), 1, 0, 0); //TODO: Carry flags
 	inc_pc(state, 1);
 }
 
@@ -173,7 +179,7 @@ void cpu_jnz_imm_8(cpu_state* state) {
 	if (!isflag(state, ZERO_FLAG)) {
 		int8_t rjump = (int8_t) mem_get(&state->mem, state->registers.pc + 1);
 		state->registers.pc += rjump;
-		printf("Signed Jump %x from %x\n", rjump, mem_get(&state->mem, state->registers.pc));
+		printf("Signed Jump %1x from %x\n", rjump, mem_get(&state->mem, state->registers.pc));
 	} else {
 		inc_pc(state, 2);
 	}
@@ -187,7 +193,7 @@ void cpu_jump_imm_16(cpu_state* state) {
 
 void cpu_cp_a(cpu_state* state, uint8_t val) {
 	uint8_t res = state->registers.a - val;
-	do_flags(state, !val, 1, 0, 0);
+	do_flags(state, !res, 1, 0, 0);
 }
 
 void cpu_cmp_a_imm_8(cpu_state* state) {
@@ -408,21 +414,30 @@ bool cpu_step(cpu_state* state) {
 		case DEC_BC:
 			cpu_addfix16(state, -1, &state->registers.bc);
 			break;
+
 		case DEC_H:
-			cpu_addfix8(state, -1, &state->registers.h);
+			cpu_dec8(state, &state->registers.h);
 			break;
 		case DEC_E:
-			cpu_addfix8(state, -1, &state->registers.e);
+			cpu_dec8(state, &state->registers.e);
 			break;
 		case DEC_B:
-			cpu_addfix8(state, -1, &state->registers.b);
+			cpu_dec8(state, &state->registers.b);
 			break;
+		
 		case DEC_C:
-			cpu_addfix8(state, -1, &state->registers.c);
+			cpu_dec8(state, &state->registers.c);
 			break;
 		case DEC_D:
-			cpu_addfix8(state, -1, &state->registers.d);
+			cpu_dec8(state, &state->registers.d);
 			break;
+		case DEC_L:
+			cpu_dec8(state, &state->registers.l);
+			break;
+		case DEC_A:
+			cpu_dec8(state, &state->registers.a);
+			break;
+
 		case RL_A:
 			rl_8bit_reg(state, &state->registers.a);
 			inc_pc(state, 1);

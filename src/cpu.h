@@ -75,10 +75,13 @@ typedef enum {
 	
 	DEC_BC = 0x0B,
 	DEC_H = 0x25,
-	DEC_E = 0x1D,
 	DEC_D = 0x15,
 	DEC_B = 0x05,
+
 	DEC_C = 0xD,
+	DEC_E = 0x1D,
+	DEC_L = 0x2D,
+	DEC_A = 0x3D,
 
 	PUSH_BC = 0xC5,
 
