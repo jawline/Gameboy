@@ -6,7 +6,7 @@
 
 typedef enum {
 	NOOP = 0,
-	RLC_A = 6,
+	RLC_A = 0x6,
 	LD_BC_nn = 0x1,
 	LD_DE_nn = 0x11,
 	LD_HL_nn = 0x21,
@@ -67,6 +67,8 @@ typedef enum {
 	DEC_D = 0x15,
 	DEC_B = 0x05,
 	DEC_C = 0xD,
+
+	LD_REF_nn_A = 0xEA,
 	
 	LDI_REF_HL_A = 0x22,
 	ADD_HL_DE = 0x19,

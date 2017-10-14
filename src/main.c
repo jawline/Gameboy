@@ -27,7 +27,7 @@ int main(int argc, char const* const* argv) {
 
 	while (cpu_step(&s)) {
 		if (!view_render(&view, &s)) {
-			return;
+			break;
 		}
 	}
 

@@ -30,6 +30,9 @@ remove:
 clean:
 	-@rm -r $(OBJ_DIR) $(EXECUTABLE)
 
+test: all
+	$(EXECUTABLE) ~/test.gb
+
 #The executable rule compiles the set of objects into the target executable
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
