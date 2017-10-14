@@ -1,7 +1,7 @@
 #include "cpu.h"
 #include <stdio.h>
 
-const uint16_t START_PC = 0x0;
+const uint16_t START_PC = 0x100;
 const uint16_t START_STACK = 0xFFFE;
 
 const uint8_t SIGN_FLAG = 0x1 << 7;
@@ -179,7 +179,7 @@ void cpu_jnz_imm_8(cpu_state* state) {
 	if (!isflag(state, ZERO_FLAG)) {
 		int8_t rjump = (int8_t) mem_get(&state->mem, state->registers.pc + 1);
 		state->registers.pc += rjump;
-		printf("Signed Jump %1x from %x\n", rjump, mem_get(&state->mem, state->registers.pc));
+		printf("JNZ REL %i from %x\n", rjump, mem_get(&state->mem, state->registers.pc));
 	} else {
 		inc_pc(state, 2);
 	}
