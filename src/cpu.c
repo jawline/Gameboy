@@ -36,8 +36,11 @@ uint16_t stack_pop16(cpu_state* state) {
 
 void cpu_call(cpu_state* state, uint16_t val) {
 	stack_push16(state, state->registers.pc + 3);
-	printf("Pushed stack\n");
 	state->registers.pc = val;
+}
+
+void cpu_call_nn(cpu_state* state) {
+	cpu_call(state, mem_get16(&state->mem, state->registers.pc + 1));
 }
 
 uint8_t rotl8(const uint8_t value, uint32_t shift) {
@@ -93,7 +96,6 @@ void cpu_ld16(cpu_state* state, uint16_t* reg) {
 
 void cpu_mov8(cpu_state* state, uint8_t* to, uint8_t val) {
 	*to = val;
-	do_flags(state, *to);
 	inc_pc(state, 1);
 }
 
@@ -435,6 +437,21 @@ bool cpu_step(cpu_state* state) {
 		case LDH_REF_A_n:
 			cpu_save_flags_register(state, &state->registers.a);
 			break;
+		case LD_C_n:
+			cpu_load_8(state, &state->registers.c);
+			break;
+		case LD_E_n:
+			cpu_load_8(state, &state->registers.e);
+			break;
+		case LD_L_n:
+			cpu_load_8(state, &state->registers.l);
+			break;
+		case LD_A_n:
+			cpu_load_8(state, &state->registers.a);
+			break;
+		case LD_B_B:
+			cpu_mov8(state, &state->registers.b, state->registers.b);
+			break;
 		case LD_D_B:
 			cpu_mov8(state, &state->registers.d, state->registers.b);
 			break;
@@ -486,9 +503,6 @@ bool cpu_step(cpu_state* state) {
 		case LD_L_A:
 			cpu_mov8(state, &state->registers.l, state->registers.a);
 			break;
-		case LD_A_n:
-			cpu_load_8(state, &state->registers.a);
-			break;
 		case LD_REF_HL_n:
 			cpu_load_ref_reg_16_imm_8(state);
 			break;
@@ -537,9 +551,6 @@ bool cpu_step(cpu_state* state) {
 			break;
 		case LD_D_REF_HL:
 			cpu_mov8(state, &state->registers.d, mem_get(&state->mem, state->registers.hl));
-			break;
-		case LD_C_n:
-			cpu_load_8(state, &state->registers.c);
 			break;
 		case LD_C_E:
 			state->registers.c = state->registers.e;
@@ -597,8 +608,17 @@ bool cpu_step(cpu_state* state) {
 			break;
 		
 		case CALL_nn: 
-			stack_push16(state, state->registers.pc + 3);
-			state->registers.pc = mem_get16(&state->mem, state->registers.pc + 1);
+			cpu_call_nn(state);
+			break;
+
+		case CALL_Z_nn:
+			
+			if (isflag(state, ZERO_FLAG)) {
+				cpu_call_nn(state);
+			} else {
+				inc_pc(state, 3);
+			}
+
 			break;
 
 		case RET_NZ:
