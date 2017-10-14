@@ -2,6 +2,6 @@
 #define _EMULATOR_DEF_H_
 #include "cpu.h"
 
-char emu_init(cpu_state* state, char const* rom);
+char emu_init(cpu_state* state, char const* bios, char const* rom);
 
 #endif

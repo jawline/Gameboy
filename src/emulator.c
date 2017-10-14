@@ -2,8 +2,8 @@
 #include "romloader.h"
 #include <stdint.h>
 
-char emu_init(cpu_state* state, char const* rom) {
-	uint8_t* romdat = rom_load(rom);
+char emu_init(cpu_state* state, char const* bios, char const* rom) {
+	uint8_t* romdat = rom_load(bios, rom);
 
 	if (!romdat) {
 		return 0;

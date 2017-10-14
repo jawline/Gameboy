@@ -68,6 +68,8 @@ typedef enum {
 	DEC_B = 0x05,
 	DEC_C = 0xD,
 
+	EXT_OP = 0xCB,
+
 	LD_REF_nn_A = 0xEA,
 	
 	LDI_REF_HL_A = 0x22,
@@ -82,6 +84,10 @@ typedef enum {
 	ENABLE_INTERRUPTS = 0xFB,
 	RST_38 = 0xFF
 } cpu_ops;
+
+typedef enum {
+	TEST_7_H = 0x7C
+} cpu_ops_ext;
 
 typedef struct cpu_registers {
 	uint16_t pc, sp;

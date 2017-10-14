@@ -1,7 +1,7 @@
 #include "cpu.h"
 #include <stdio.h>
 
-const uint16_t START_PC = 0x100;
+const uint16_t START_PC = 0x0;
 const uint16_t START_STACK = 0xFFFE;
 
 const uint8_t SIGN_FLAG = 0x1 << 7;
@@ -60,7 +60,7 @@ void do_flags(cpu_state* state, uint16_t v) {
 		flags = flags & ZERO_FLAG;
 	}
 
-	flag(state, ZERO_FLAG);
+	flag(state, flags);
 }
 
 void do_flags16(cpu_state* state, uint8_t to) {
@@ -193,6 +193,103 @@ void cpu_xor_reg(cpu_state* state, uint8_t* reg1, uint8_t* reg2) {
 	*reg1 = *reg1 ^ *reg2;
 	do_flags(state, *reg1);
 	inc_pc(state, 1);
+}
+
+bool ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
+	uint8_t tested = *reg & (0x1 << bit);
+	printf("Tested bit R %x\n", tested);
+
+	uint8_t current_flags = state->registers.f;
+
+	if (tested == 0) {
+		current_flags &= ZERO_FLAG;
+	} else {
+		current_flags |= ZERO_FLAG;
+	}
+
+	current_flags &= HALF_CARRY_FLAG;
+	current_flags |= SUBTRACT_FLAG;
+
+	flag(state, current_flags);
+}
+
+bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
+
+	uint8_t c_instr_greater_nibble = c_instr >> 4;
+	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
+
+	printf("EXT CPU Step Bit instr %x %x\n", c_instr_greater_nibble, c_instr_lesser_nibble);
+
+	uint8_t start_offset = 0;
+
+	if (c_instr_lesser_nibble >= 8) {
+		start_offset = 1;
+		c_instr_lesser_nibble -= 8;
+	}
+
+	uint8_t selected_bit = (c_instr_greater_nibble - 4) * 2 + start_offset;
+
+	printf("Selected Bit %x\n", selected_bit);
+
+	//Custom logic for the HL
+	if (c_instr_lesser_nibble == 6) {
+		printf("HL BIT NOT IMPL\n");
+		return false;
+	} else {
+		//It's an 8 bit reg instr
+		uint8_t* reg;
+
+		switch (c_instr_lesser_nibble) {
+			case 0:
+				reg = &state->registers.b;
+				break;
+			case 1:
+				reg = &state->registers.c;
+				break;
+			case 2:
+				reg = &state->registers.d;
+				break;
+			case 3:
+				reg = &state->registers.e;
+				break;
+			case 4:
+				reg = &state->registers.h;
+				break;
+			case 5:
+				reg = &state->registers.l;
+				break;
+			case 7:
+				reg = &state->registers.a;
+				break;
+			default:
+				printf("Error in reg table");
+				return false;
+		}
+
+		ext_cpu_step_bit_test_8bit_reg(state, reg, selected_bit);
+		state->registers.pc += 1;
+		return true;
+	}
+}
+
+bool ext_cpu_step(cpu_state* state) {
+	state->registers.pc += 1;
+
+	printf("EXT PC=%x\n", state->registers.pc);
+	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
+	printf("EXTInstr %x\n", c_instr);
+
+	if (c_instr >= 0x40 && c_instr < 0x80) {
+		return ext_cpu_step_bit(c_instr, state);
+	} else {
+		switch (c_instr) {
+			default:
+				printf("Unknown EXT instruction %x\n", c_instr);
+				return false;
+		}
+	}
+
+	return true;
 }
 
 bool cpu_step(cpu_state* state) {
@@ -404,6 +501,13 @@ bool cpu_step(cpu_state* state) {
 			break;
 		case DISABLE_INTERRUPTS:
 			cpu_setinterrupts(state, 0);
+			break;
+		case EXT_OP:
+			
+			if (!ext_cpu_step(state)) {
+				return false;
+			}
+
 			break;
 		case RST_38:
 			cpu_call(state, 0x0038);
