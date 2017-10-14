@@ -279,7 +279,7 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 		}
 
 		ext_cpu_step_bit_test_8bit_reg(state, reg, selected_bit);
-		state->registers.pc += 1;
+		inc_pc(state, 1);
 		return true;
 	}
 }
@@ -341,12 +341,12 @@ bool ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 			return false;
 	}
 
-	state->registers.pc += 1;
+	inc_pc(state, 1);
 	return rl_8bit_reg(state, reg);
 }
 
 bool ext_cpu_step(cpu_state* state) {
-	state->registers.pc += 1;
+	inc_pc(state, 1);
 
 	printf("EXT PC=%x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
@@ -425,7 +425,7 @@ bool cpu_step(cpu_state* state) {
 			break;
 		case RL_A:
 			rl_8bit_reg(state, &state->registers.a);
-			state->registers.pc += 1;
+			inc_pc(state, 1);
 			break;
 		case LDD_REF_HL_A:
 			cpu_load_reg_16_reg_then_dec(state, &state->registers.hl, &state->registers.a);
@@ -607,7 +607,7 @@ bool cpu_step(cpu_state* state) {
 
 		case PUSH_BC:
 			stack_push16(state, state->registers.bc);
-			state->registers.pc += 1;
+			inc_pc(state, 1);
 			break;
 		
 		case CALL_nn: 
@@ -629,7 +629,7 @@ bool cpu_step(cpu_state* state) {
 			if (!isflag(state, ZERO_FLAG)) {
 				state->registers.pc = stack_pop16(state);
 			} else {
-				state->registers.pc += 1;
+				inc_pc(state, 1);
 			}
 
 			break;
