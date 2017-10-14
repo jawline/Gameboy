@@ -33,6 +33,12 @@ void stack_push16(cpu_state* state, uint16_t v) {
 	state->registers.sp -= 2;
 }
 
+uint16_t stack_pop16(cpu_state* state) {
+	printf("POP 16\n");
+	state->registers.sp += 2;
+	return mem_get16(&state->mem, state->registers.sp);
+}
+
 void cpu_call(cpu_state* state, uint16_t val) {
 	stack_push16(state, state->registers.pc + 3);
 	printf("Pushed stack\n");
@@ -151,7 +157,7 @@ void cpu_load_reg_16_reg_then_dec(cpu_state* state, uint16_t* reg_addr, uint8_t*
 void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
 	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
 	mem_set(&state->mem, addr, *reg);
-	do_flags(state, reg);
+	do_flags(state, *reg);
 	inc_pc(state, 3);
 }
 
@@ -272,6 +278,67 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 	}
 }
 
+bool rl_8bit_reg(cpu_state* state, uint8_t* reg) {
+
+	uint8_t bit_7 = *reg & (1 << 7);
+
+	printf("Pre %x v %x\n", *reg, (*reg << 1) | (*reg >> 7));
+	*reg = (*reg << 1) | (*reg >> 7);
+
+	uint8_t current_flags = state->registers.f;
+
+	if (*reg) {
+		current_flags |= ZERO_FLAG;
+	} else {
+		current_flags &= ZERO_FLAG;
+	}
+
+	current_flags |= SUBTRACT_FLAG;
+	current_flags |= HALF_CARRY_FLAG;
+
+	if (bit_7 == 0) {
+		current_flags |= CARRY_FLAG;
+	} else {
+		current_flags &= CARRY_FLAG;
+	}
+
+	flag(state, current_flags);
+
+	return true;
+}
+
+bool ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
+	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
+	uint8_t* reg;
+
+	switch (c_instr_lesser_nibble) {
+		case 0:
+			reg = &state->registers.b;
+			break;
+		case 1:
+			reg = &state->registers.c;
+			break;
+		case 2:
+			reg = &state->registers.d;
+			break;
+		case 3:
+			reg = &state->registers.e;
+			break;
+		case 4:
+			reg = &state->registers.h;
+			break;
+		case 5:
+			reg = &state->registers.l;
+			break;
+		default:
+			printf("Bad Table EXT_CPU_RL_8BIT\n");
+			return false;
+	}
+
+	state->registers.pc += 1;
+	return rl_8bit_reg(state, reg);
+}
+
 bool ext_cpu_step(cpu_state* state) {
 	state->registers.pc += 1;
 
@@ -281,6 +348,8 @@ bool ext_cpu_step(cpu_state* state) {
 
 	if (c_instr >= 0x40 && c_instr < 0x80) {
 		return ext_cpu_step_bit(c_instr, state);
+	} else if (c_instr >= 0x10 && c_instr < 0x16) {
+		return ext_cpu_rl_8bit(state, c_instr);
 	} else {
 		switch (c_instr) {
 			default:
@@ -338,6 +407,10 @@ bool cpu_step(cpu_state* state) {
 			break;
 		case DEC_D:
 			cpu_addfix8(state, -1, &state->registers.d);
+			break;
+		case RL_A:
+			rl_8bit_reg(state, &state->registers.a);
+			state->registers.pc += 1;
 			break;
 		case LDD_REF_HL_A:
 			cpu_load_reg_16_reg_then_dec(state, &state->registers.hl, &state->registers.a);
@@ -502,6 +575,27 @@ bool cpu_step(cpu_state* state) {
 		case DISABLE_INTERRUPTS:
 			cpu_setinterrupts(state, 0);
 			break;
+
+		case PUSH_BC:
+			stack_push16(state, state->registers.bc);
+			state->registers.pc += 1;
+			break;
+		
+		case CALL_nn: 
+			stack_push16(state, state->registers.pc + 3);
+			state->registers.pc = mem_get16(&state->mem, state->registers.pc + 1);
+			break;
+
+		case RET_NZ:
+
+			if (!isflag(state, ZERO_FLAG)) {
+				state->registers.pc = stack_pop16(state);
+			} else {
+				state->registers.pc += 1;
+			}
+
+			break;
+
 		case EXT_OP:
 			
 			if (!ext_cpu_step(state)) {

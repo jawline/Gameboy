@@ -68,6 +68,13 @@ typedef enum {
 	DEC_B = 0x05,
 	DEC_C = 0xD,
 
+	PUSH_BC = 0xC5,
+
+	RL_A = 0x17,
+
+	CALL_nn = 0xCD,
+	RET_NZ = 0xC1,
+
 	EXT_OP = 0xCB,
 
 	LD_REF_nn_A = 0xEA,
@@ -86,7 +93,7 @@ typedef enum {
 } cpu_ops;
 
 typedef enum {
-	TEST_7_H = 0x7C
+	TEST_7_H = 0x7C,
 } cpu_ops_ext;
 
 typedef struct cpu_registers {

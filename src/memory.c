@@ -9,7 +9,7 @@ void memory_init(memory* mem, uint8_t* rom) {
 	mem->rom = rom;
 	mem->ram = malloc(8192);
 	mem->vram = malloc(8192);
-	mem->topram = malloc(128);
+	mem->topram = malloc(0xFFFF - 0xFF80);
 }
 
 uint8_t* ptr(memory* mem, uint16_t off) {
@@ -82,6 +82,7 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 		}
 
 	} else if (off <= 0xFFFF) {
+		printf("TopRam Access %x\n", off);
 		return &mem->topram[off - END_UNUSED_IO];
 	}
 
