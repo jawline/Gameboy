@@ -171,7 +171,7 @@ void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 
 void cpu_jnz_imm_8(cpu_state* state) {
 	if (!isflag(state, ZERO_FLAG)) {
-		int8_t rjump = (int8_t) mem_get(&state->mem, state->registers.pc);
+		int8_t rjump = (int8_t) mem_get(&state->mem, state->registers.pc + 1);
 		state->registers.pc += rjump;
 		printf("Signed Jump %x from %x\n", rjump, mem_get(&state->mem, state->registers.pc));
 	} else {
