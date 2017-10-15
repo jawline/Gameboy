@@ -342,10 +342,10 @@ void cpu_add_reg_to_a(cpu_state* state, uint8_t reg) {
 }
 
 bool cpu_step(cpu_state* state) {
-	printf("Step PC=0x%02x\n", state->registers.pc);
+	printf("Step PC=0x%02X\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
 
-	printf("Instr 0x%02x\n", c_instr);
+	printf("Instr 0x%02X\n", c_instr);
 
 	switch (c_instr) {
 		case NOOP:
@@ -677,7 +677,7 @@ bool cpu_step(cpu_state* state) {
 			return false;
 	}
 
-	printf("Done INSTR=0x%02x (%i) PC=0x%02x FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, state->registers.pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
+	printf("Done INSTR=0x%02X (%i) PC=0x%02X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, state->registers.pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
 
 	return true;
 }
