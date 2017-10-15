@@ -57,6 +57,11 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 			case 0xFF0F:
 				return &mem->intflag;
 
+			case 0xFF11:
+				return &mem->nr11;
+			case 0xFF12:
+				return &mem->nr12;
+
 			case 0xFF24:
 				return &mem->nr50;
 			case 0xFF25:

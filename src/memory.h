@@ -31,6 +31,11 @@ typedef struct {
 	uint8_t obp0;
 	uint8_t obp1;
 
+
+	//Sound mode
+	uint8_t nr11;
+	uint8_t nr12;
+
 	uint8_t nr50;
 	uint8_t nr51;
 	uint8_t nr52;
