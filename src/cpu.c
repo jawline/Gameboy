@@ -16,6 +16,8 @@ const uint8_t CARRY_FLAG = 0x1;
 #define UNSET_FLAG(r, f) r &= ~f
 #define BUILD_FLAG(r, f, v) if (v) { SET_FLAG(r, f); } else { UNSET_FLAG(r, f); }
 
+#define DEBUG 1
+
 #ifdef DEBUG 
 #define DEBUG_OUT(...) printf(__VA_ARGS__)
 #else
@@ -42,9 +44,10 @@ uint16_t stack_pop16(cpu_state* state) {
 	return mem_get16(&state->mem, state->registers.sp);
 }
 
-void cpu_call(cpu_state* state, uint16_t val) {
+void cpu_call(cpu_state* state, uint16_t address) {
+	DEBUG_OUT("CPU CALL 0x%02X\n", address);
 	stack_push16(state, state->registers.pc + 3);
-	state->registers.pc = val;
+	state->registers.pc = address;
 }
 
 void cpu_call_nn(cpu_state* state) {
@@ -76,7 +79,7 @@ void do_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_ca
 	flag(state, flags);
 }
 
-void cpu_inc8reg(cpu_state* state, int8_t v, uint8_t* reg) {
+void cpu_inc_reg8(cpu_state* state, int8_t v, uint8_t* reg) {
 	*reg += v;
 	do_flags(state, !(*reg), 0, 0, 0);
 	inc_pc(state, 1);
@@ -170,8 +173,8 @@ void cpu_jnz_imm_8(cpu_state* state) {
 	const unsigned INSTR_SIZE = 2;
 	DEBUG_OUT("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
 	if (!isflag(state, ZERO_FLAG)) {
+		DEBUG_OUT("JR NZ %i from %x\n", ((int8_t) mem_get(&state->mem, state->registers.pc + 1)), state->registers.pc);
 		state->registers.pc += ((int8_t) mem_get(&state->mem, state->registers.pc + 1)) + INSTR_SIZE;
-		DEBUG_OUT("JR NZ %i to %x\n", rjump, state->registers.pc);
 	} else {
 		inc_pc(state, INSTR_SIZE);
 	}
@@ -375,25 +378,25 @@ bool cpu_step(cpu_state* state) {
 			cpu_addfix16(state, 1, &state->registers.sp);
 			break;
 		case INC_B:
-			cpu_inc8reg(state, 1, &state->registers.b);
+			cpu_inc_reg8(state, 1, &state->registers.b);
 			break;
 		case INC_C:
-			cpu_inc8reg(state, 1, &state->registers.c);
+			cpu_inc_reg8(state, 1, &state->registers.c);
 			break;
 		case INC_E:
-			cpu_inc8reg(state, 1, &state->registers.e);
+			cpu_inc_reg8(state, 1, &state->registers.e);
 			break;
 		case INC_L:
-			cpu_inc8reg(state, 1, &state->registers.l);
+			cpu_inc_reg8(state, 1, &state->registers.l);
 			break;
 		case INC_A:
-			cpu_inc8reg(state, 1, &state->registers.a);
+			cpu_inc_reg8(state, 1, &state->registers.a);
 			break;
 		case INC_D:
-			cpu_inc8reg(state, 1, &state->registers.d);
+			cpu_inc_reg8(state, 1, &state->registers.d);
 			break;
 		case INC_H:
-			cpu_inc8reg(state, 1, &state->registers.h);
+			cpu_inc_reg8(state, 1, &state->registers.h);
 			break;
 		case DEC_BC:
 			cpu_addfix16(state, -1, &state->registers.bc);
@@ -660,7 +663,7 @@ bool cpu_step(cpu_state* state) {
 
 		case RET_NZ:
 
-			printf("RET NZ\n");
+			DEBUG_OUT("RET NZ\n");
 
 			if (!isflag(state, ZERO_FLAG)) {
 				state->registers.pc = stack_pop16(state);
