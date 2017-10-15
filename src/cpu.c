@@ -135,9 +135,9 @@ void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 	inc_pc(state, 1);
 }
 
-void cpu_save_reg_at(cpu_state* state, uint16_t offset, uint8_t addr_offset, uint8_t regval) {
-	uint16_t addr = addr_offset + addr_offset;
-	mem_set(&state->mem, addr, regval);
+void cpu_save_reg_at(cpu_state* state, uint16_t offset, uint8_t addr, uint8_t regval) {
+	uint16_t final_addr = offset + addr;
+	mem_set(&state->mem, final_addr, regval);
 }
 
 void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
