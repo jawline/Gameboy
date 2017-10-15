@@ -8,6 +8,8 @@ typedef enum {
 	NOOP = 0,
 	RLC_A = 0x6,
 
+	HALT = 0x76,
+
 	LD_BC_nn = 0x1,
 	LD_DE_nn = 0x11,
 	LD_HL_nn = 0x21,
@@ -19,8 +21,20 @@ typedef enum {
 	LD_L_n = 0x2E,
 	LD_A_n = 0x3E,
 
-	LD_B_B = 0x40,
+	LD_A_REF_BC = 0x0A,
+	LD_A_REF_DE = 0x1A,
+
+	LD_C_A = 0x4F,
+	LD_E_A = 0x5F,
+	LD_L_A = 0x6F,
+
 	LD_C_E = 0x4B,
+	LD_E_E = 0x5B,
+	LD_L_E = 0x6B,
+	LD_A_E = 0x7B,
+
+	LD_B_B = 0x40,
+
 	LD_D_B = 0x50,
 	LD_D_C = 0x51,
 	LD_D_D = 0x52,
@@ -32,8 +46,6 @@ typedef enum {
 	LD_E_C = 0x59,
 	LD_E_D = 0x5A,
 	LD_L_H = 0x6C,
-	LD_E_E = 0x5B,
-	LD_L_A = 0x6F,
 	LD_E_H = 0x5c,
 	LD_C_B = 0x48,
 	LD_C_C = 0x49,
@@ -100,12 +112,16 @@ typedef enum {
 	DEC_L = 0x2D,
 	DEC_A = 0x3D,
 
+	POP_BC = 0xC1,
 	PUSH_BC = 0xC5,
+
 
 	RL_A = 0x17,
 
 	CALL_nn = 0xCD,
 	CALL_Z_nn = 0xCC,
+
+	RET = 0xC9,
 	RET_NZ = 0xC0,
 
 	EXT_OP = 0xCB,
