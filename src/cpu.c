@@ -16,6 +16,12 @@ const uint8_t CARRY_FLAG = 0x1;
 #define UNSET_FLAG(r, f) r &= ~f
 #define BUILD_FLAG(r, f, v) if (v) { SET_FLAG(r, f); } else { UNSET_FLAG(r, f); }
 
+#ifdef DEBUG 
+#define DEBUG_OUT(...) printf(__VA_ARGS__)
+#else
+#define DEBUG_OUT(...)
+#endif
+
 void cpu_init(cpu_state* state) {
 	state->registers.pc = START_PC;
 }
@@ -25,13 +31,13 @@ void inc_pc(cpu_state* state, uint16_t off) {
 }
 
 void stack_push16(cpu_state* state, uint16_t v) {
-	printf("PUSH 16 %x %x\n", state->registers.sp, v);
+	DEBUG_OUT("PUSH 16 %x %x\n", state->registers.sp, v);
 	mem_set16(&state->mem, state->registers.sp, v);
 	state->registers.sp -= 2;
 }
 
 uint16_t stack_pop16(cpu_state* state) {
-	printf("POP 16\n");
+	DEBUG_OUT("POP 16\n");
 	state->registers.sp += 2;
 	return mem_get16(&state->mem, state->registers.sp);
 }
@@ -161,20 +167,20 @@ void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 }
 
 void cpu_jnz_imm_8(cpu_state* state) {
-	printf("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
+	const unsigned INSTR_SIZE = 2;
+	DEBUG_OUT("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
 	if (!isflag(state, ZERO_FLAG)) {
-		int8_t rjump = (int8_t) mem_get(&state->mem, state->registers.pc + 1);
-		state->registers.pc += rjump + 2;
-		printf("JR NZ %i to %x\n", rjump, state->registers.pc);
+		state->registers.pc += ((int8_t) mem_get(&state->mem, state->registers.pc + 1)) + INSTR_SIZE;
+		DEBUG_OUT("JR NZ %i to %x\n", rjump, state->registers.pc);
 	} else {
-		inc_pc(state, 2);
+		inc_pc(state, INSTR_SIZE);
 	}
 }
 
 void cpu_jump_imm_16(cpu_state* state) {
 	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
 	state->registers.pc = addr;
-	printf("Jump Immediate: %x\n", addr);
+	DEBUG_OUT("Jump Immediate: %x\n", addr);
 }
 
 void cpu_cp_a(cpu_state* state, uint8_t val) {
@@ -197,13 +203,13 @@ void cpu_xor_reg(cpu_state* state, uint8_t* reg1, uint8_t v) {
 	*reg1 ^= v;
 	do_flags(state, !(*reg1), 0, 0, 0);
 	inc_pc(state, 1);
-	printf("Final reg val %x\n", *reg1);
+	DEBUG_OUT("Final reg val %x\n", *reg1);
 }
 
 void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
-	printf("Testing reg %x\n", *reg);
+	DEBUG_OUT("Testing reg %x\n", *reg);
 	uint8_t tested = *reg & (0x1 << bit);
-	printf("Tested bit R %x\n", tested);
+	DEBUG_OUT("Tested bit R %x\n", tested);
 
 
 	do_flags(state, tested == 0, 0, 1, isflag(state, CARRY_FLAG));
@@ -214,7 +220,7 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
 
-	printf("EXT CPU Step Bit instr %x %x\n", c_instr_greater_nibble, c_instr_lesser_nibble);
+	DEBUG_OUT("EXT CPU Step Bit instr %x %x\n", c_instr_greater_nibble, c_instr_lesser_nibble);
 
 	uint8_t start_offset = 0;
 
@@ -225,11 +231,11 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 
 	uint8_t selected_bit = (c_instr_greater_nibble - 4) * 2 + start_offset;
 
-	printf("Selected Bit %x\n", selected_bit);
+	DEBUG_OUT("Selected Bit %x\n", selected_bit);
 
 	//Custom logic for the HL
 	if (c_instr_lesser_nibble == 6) {
-		printf("HL BIT NOT IMPL\n");
+		DEBUG_OUT("HL BIT NOT IMPL\n");
 		return false;
 	} else {
 		//It's an 8 bit reg instr
@@ -249,7 +255,6 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 				reg = &state->registers.e;
 				break;
 			case 4:
-				printf("Selected H register\n");
 				reg = &state->registers.h;
 				break;
 			case 5:
@@ -273,7 +278,7 @@ bool rl_8bit_reg(cpu_state* state, uint8_t* reg) {
 
 	uint8_t bit_7 = *reg & (1 << 7);
 
-	printf("Pre %x v %x\n", *reg, (*reg << 1) | (*reg >> 7));
+	DEBUG_OUT("Pre %x v %x\n", *reg, (*reg << 1) | (*reg >> 7));
 	*reg = (*reg << 1) | (*reg >> 7);
 
 	do_flags(state, *reg, 0, 0, bit_7);
@@ -316,9 +321,9 @@ bool ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 bool ext_cpu_step(cpu_state* state) {
 	inc_pc(state, 1);
 
-	printf("EXT PC=%x\n", state->registers.pc);
+	DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
-	printf("EXTInstr %x\n", c_instr);
+	DEBUG_OUT("EXTInstr %x\n", c_instr);
 
 	if (c_instr >= 0x40 && c_instr < 0x80) {
 		return ext_cpu_step_bit(c_instr, state);
@@ -342,10 +347,12 @@ void cpu_add_reg_to_a(cpu_state* state, uint8_t reg) {
 }
 
 bool cpu_step(cpu_state* state) {
-	printf("Step PC=0x%02X\n", state->registers.pc);
+	
+	uint16_t start_pc = state->registers.pc;
+	DEBUG_OUT("Step PC=0x%02X\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
 
-	printf("Instr 0x%02X\n", c_instr);
+	DEBUG_OUT("Instr 0x%02X\n", c_instr);
 
 	switch (c_instr) {
 		case NOOP:
@@ -447,6 +454,7 @@ bool cpu_step(cpu_state* state) {
 			break;
 		case LD_A_n:
 			cpu_load_8(state, &state->registers.a);
+			printf("Set A %x\n", state->registers.a);
 			break;
 		case LD_B_B:
 			cpu_mov8(state, &state->registers.b, state->registers.b);
@@ -677,7 +685,7 @@ bool cpu_step(cpu_state* state) {
 			return false;
 	}
 
-	printf("Done INSTR=0x%02X (%i) PC=0x%02X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, state->registers.pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
+	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
 
 	return true;
 }
