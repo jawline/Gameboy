@@ -9,8 +9,8 @@ char emu_init(cpu_state* state, char const* bios, char const* rom) {
 		return 0;
 	}
 	
-	memory_init(&state->mem, romdat);
 	cpu_init(state);
+	memory_init(&state->mem, romdat);
 
 	return 1;
 }

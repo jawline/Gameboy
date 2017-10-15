@@ -21,14 +21,14 @@ int main(int argc, char const* const* argv) {
 
 	view_t view;
 
-	if (!view_init(&view)) {
-		return 1;
-	}
+	//if (!view_init(&view)) {
+	//	return 1;
+	//}
 
 	while (cpu_step(&s)) {
-		if (!view_render(&view, &s)) {
-			break;
-		}
+	//	if (!view_render(&view, &s)) {
+	//		break;
+	//	}
 	}
 
 	return 0;

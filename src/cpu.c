@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 const uint16_t START_PC = 0x0;
-const uint16_t START_STACK = 0xFFFE;
 
 const uint8_t SIGN_FLAG = 0x1 << 7;
 const uint8_t ZERO_FLAG = 0x1 << 6;
@@ -11,11 +10,14 @@ const uint8_t HALF_CARRY_FLAG = 0x1 << 4;
 const uint8_t UDOC_2_FLAG = 0x1 << 3;
 const uint8_t PO_FLAG = 0x1 << 2; //Parity or offset
 const uint8_t SUBTRACT_FLAG = 0x1 << 2;
-const uint8_t CARRY_FLAG = 0x0;
+const uint8_t CARRY_FLAG = 0x1;
+
+#define SET_FLAG(r, f) r |= f
+#define UNSET_FLAG(r, f) r &= ~f
+#define BUILD_FLAG(r, f, v) if (v) { SET_FLAG(r, f); } else { UNSET_FLAG(r, f); }
 
 void cpu_init(cpu_state* state) {
 	state->registers.pc = START_PC;
-	state->registers.sp = START_STACK;
 }
 
 void inc_pc(cpu_state* state, uint16_t off) {
@@ -60,29 +62,10 @@ char isflag(cpu_state* state, uint8_t flags) {
 void do_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_carry, bool carry) {
 	uint8_t flags = state->registers.f;
 
-	if (zero_flag) {
-		flags &= ZERO_FLAG;
-	} else {
-		flags |= ZERO_FLAG;
-	}
-
-	if (negative_flag) {
-		flags &= SUBTRACT_FLAG;
-	} else {
-		flags |= SUBTRACT_FLAG;
-	}
-
-	if (half_carry) {
-		flags &= HALF_CARRY_FLAG;
-	} else {
-		flags |= HALF_CARRY_FLAG;
-	}
-
-	if (carry) {
-		flags &= CARRY_FLAG;
-	} else {
-		flags |= CARRY_FLAG;
-	}
+	BUILD_FLAG(flags, ZERO_FLAG, zero_flag);
+	BUILD_FLAG(flags, SUBTRACT_FLAG, negative_flag);
+	BUILD_FLAG(flags, HALF_CARRY_FLAG, half_carry);
+	BUILD_FLAG(flags, CARRY_FLAG, carry);
 
 	flag(state, flags);
 }
@@ -112,6 +95,12 @@ void cpu_sub8(cpu_state* state, uint8_t* lhs, uint8_t rhs) {
 	*lhs -= rhs;
 	do_flags(state, !(*lhs), 1, 0, 0); //TODO: Carry flags
 	inc_pc(state, 1);
+}
+
+void cpu_dec16(cpu_state* state, uint16_t* reg) {
+	*reg -= 1;
+	do_flags(state, !(*reg), 1, 0, 0); //TODO: Carry flags
+	inc_pc(state, 1);	
 }
 
 void cpu_dec8(cpu_state* state, uint8_t* reg) {
@@ -151,10 +140,9 @@ void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
 	inc_pc(state, 2);
 }
 
-void cpu_load_reg_16_reg_then_dec(cpu_state* state, uint16_t* reg_addr, uint8_t* reg) {
+void cpu_save_reg_to_addr_then_dec_addr(cpu_state* state, uint16_t* reg_addr, uint8_t* reg) {
 	mem_set(&state->mem, *reg_addr, *reg);
-	*reg_addr -= 1;
-	inc_pc(state, 1);
+	cpu_dec16(state, &state->registers.hl);
 }
 
 void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
@@ -176,9 +164,10 @@ void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 }
 
 void cpu_jnz_imm_8(cpu_state* state) {
+	printf("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
 	if (!isflag(state, ZERO_FLAG)) {
 		int8_t rjump = (int8_t) mem_get(&state->mem, state->registers.pc + 1);
-		state->registers.pc += rjump;
+		state->registers.pc += rjump + 2;
 		printf("JR NZ %i to %x\n", rjump, state->registers.pc);
 	} else {
 		inc_pc(state, 2);
@@ -207,28 +196,20 @@ void cpu_cpl(cpu_state* state, uint8_t* reg) {
 	inc_pc(state, 1);
 }
 
-void cpu_xor_reg(cpu_state* state, uint8_t* reg1, uint8_t* reg2) {
-	*reg1 = *reg1 ^ *reg2;
+void cpu_xor_reg(cpu_state* state, uint8_t* reg1, uint8_t v) {
+	*reg1 ^= v;
 	do_flags(state, !(*reg1), 0, 0, 0);
 	inc_pc(state, 1);
+	printf("Final reg val %x\n", *reg1);
 }
 
 void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
+	printf("Testing reg %x\n", *reg);
 	uint8_t tested = *reg & (0x1 << bit);
 	printf("Tested bit R %x\n", tested);
 
-	uint8_t current_flags = state->registers.f;
 
-	if (tested == 0) {
-		current_flags &= ZERO_FLAG;
-	} else {
-		current_flags |= ZERO_FLAG;
-	}
-
-	current_flags &= HALF_CARRY_FLAG;
-	current_flags |= SUBTRACT_FLAG;
-
-	flag(state, current_flags);
+	do_flags(state, tested == 0, 0, 1, isflag(state, CARRY_FLAG));
 }
 
 bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
@@ -271,6 +252,7 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 				reg = &state->registers.e;
 				break;
 			case 4:
+				printf("Selected H register\n");
 				reg = &state->registers.h;
 				break;
 			case 5:
@@ -297,24 +279,7 @@ bool rl_8bit_reg(cpu_state* state, uint8_t* reg) {
 	printf("Pre %x v %x\n", *reg, (*reg << 1) | (*reg >> 7));
 	*reg = (*reg << 1) | (*reg >> 7);
 
-	uint8_t current_flags = state->registers.f;
-
-	if (*reg) {
-		current_flags |= ZERO_FLAG;
-	} else {
-		current_flags &= ZERO_FLAG;
-	}
-
-	current_flags |= SUBTRACT_FLAG;
-	current_flags |= HALF_CARRY_FLAG;
-
-	if (bit_7 == 0) {
-		current_flags |= CARRY_FLAG;
-	} else {
-		current_flags &= CARRY_FLAG;
-	}
-
-	flag(state, current_flags);
+	do_flags(state, *reg, 0, 0, bit_7);
 
 	return true;
 }
@@ -378,6 +343,11 @@ bool cpu_step(cpu_state* state) {
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
 
 	printf("Instr %x\n", c_instr);
+
+	if (state->registers.pc == 0x30) {
+		printf("Entered ROM\n");
+		return false;
+	}
 
 	switch (c_instr) {
 		case NOOP:
@@ -443,7 +413,7 @@ bool cpu_step(cpu_state* state) {
 			inc_pc(state, 1);
 			break;
 		case LDD_REF_HL_A:
-			cpu_load_reg_16_reg_then_dec(state, &state->registers.hl, &state->registers.a);
+			cpu_save_reg_to_addr_then_dec_addr(state, &state->registers.hl, &state->registers.a);
 			break;
 		case JR_NZ_n:
 			cpu_jnz_imm_8(state);
@@ -603,7 +573,7 @@ bool cpu_step(cpu_state* state) {
 			cpu_load_addr_16_reg16(state, &state->registers.sp);
 			break;
 		case XOR_A:
-			cpu_xor_reg(state, &state->registers.a, &state->registers.a);
+			cpu_xor_reg(state, &state->registers.a, state->registers.a);
 			break;
 		case CP_n:
 			cpu_cmp_a_imm_8(state);
