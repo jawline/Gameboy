@@ -55,8 +55,8 @@ void flag(cpu_state* state, uint8_t flags) {
 	state->registers.f = flags;
 }
 
-char isflag(cpu_state* state, uint8_t flags) {
-	return state->registers.f & flags;
+bool isflag(cpu_state* state, uint8_t flags) {
+	return (state->registers.f & flags) != 0;
 }
 
 void do_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_carry, bool carry) {
@@ -99,7 +99,7 @@ void cpu_sub8(cpu_state* state, uint8_t* lhs, uint8_t rhs) {
 
 void cpu_dec16(cpu_state* state, uint16_t* reg) {
 	*reg -= 1;
-	do_flags(state, !(*reg), 1, 0, 0); //TODO: Carry flags
+	do_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
 	inc_pc(state, 1);	
 }
 
@@ -342,15 +342,10 @@ void cpu_add_reg_to_a(cpu_state* state, uint8_t reg) {
 }
 
 bool cpu_step(cpu_state* state) {
-	printf("Step PC=%x\n", state->registers.pc);
+	printf("Step PC=0x%02x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
 
-	printf("Instr %x\n", c_instr);
-
-	if (state->registers.pc == 0x30) {
-		printf("Entered ROM\n");
-		return false;
-	}
+	printf("Instr 0x%02x\n", c_instr);
 
 	switch (c_instr) {
 		case NOOP:
@@ -510,7 +505,6 @@ bool cpu_step(cpu_state* state) {
 		case LD_REF_HL_n:
 			cpu_load_ref_reg_16_imm_8(state);
 			break;
-
 		case LD_REF_HL_B:
 			cpu_mov_ref_hl8(state, &state->registers.b);
 			break;
@@ -658,6 +652,8 @@ bool cpu_step(cpu_state* state) {
 
 		case RET_NZ:
 
+			printf("RET NZ\n");
+
 			if (!isflag(state, ZERO_FLAG)) {
 				state->registers.pc = stack_pop16(state);
 			} else {
@@ -681,7 +677,7 @@ bool cpu_step(cpu_state* state) {
 			return false;
 	}
 
-	printf("Done INSTR=%x PC=%x\n", c_instr, state->registers.pc);
+	printf("Done INSTR=0x%02x (%i) PC=0x%02x FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, state->registers.pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
 
 	return true;
 }

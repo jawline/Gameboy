@@ -106,7 +106,7 @@ typedef enum {
 
 	CALL_nn = 0xCD,
 	CALL_Z_nn = 0xCC,
-	RET_NZ = 0xC1,
+	RET_NZ = 0xC0,
 
 	EXT_OP = 0xCB,
 
