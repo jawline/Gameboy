@@ -47,11 +47,23 @@ typedef enum {
 
 	LD_REF_HL_n = 0x36,
 
-	LD_REF_HL_L = 0x75,
+	LD_REF_HL_B = 0x70,
 	LD_REF_HL_C = 0x71,
 	LD_REF_HL_D = 0x72,
 	LD_REF_HL_E = 0x73,
 	LD_REF_HL_H = 0x74,
+	LD_REF_HL_L = 0x75,
+	LD_REF_HL_A = 0x77,
+
+	ADD_A_B = 0x80,
+	ADD_A_C = 0x81,
+	ADD_A_D = 0x82,
+	ADD_A_E = 0x83,
+	ADD_A_H = 0x84,
+	ADD_A_L = 0x85,
+	ADD_A_REF_HL = 0x86,
+	ADD_A_A = 0x87,
+
 	LD_L_REF_HL = 0x6E,
 	LDD_REF_HL_A = 0x32,
 	
@@ -68,7 +80,7 @@ typedef enum {
 	INC_E = 0x1C,
 	INC_L = 0x2C,
 	INC_A = 0x3C,
-	
+
 	INC_B = 0x4,
 	INC_D = 0x14,
 	INC_H = 0x24,

@@ -335,6 +335,12 @@ bool ext_cpu_step(cpu_state* state) {
 	return true;
 }
 
+void cpu_add_reg_to_a(cpu_state* state, uint8_t reg) {
+	state->registers.a += reg;
+	do_flags(state, state->registers.a == 0, 0, 0, 0); //TODO: Carry flags
+	inc_pc(state, 1);
+}
+
 bool cpu_step(cpu_state* state) {
 	printf("Step PC=%x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
@@ -504,8 +510,9 @@ bool cpu_step(cpu_state* state) {
 		case LD_REF_HL_n:
 			cpu_load_ref_reg_16_imm_8(state);
 			break;
-		case LD_REF_HL_L:
-			cpu_mov_ref_hl8(state, &state->registers.l);
+
+		case LD_REF_HL_B:
+			cpu_mov_ref_hl8(state, &state->registers.b);
 			break;
 		case LD_REF_HL_C:
 			cpu_mov_ref_hl8(state, &state->registers.c);
@@ -519,6 +526,13 @@ bool cpu_step(cpu_state* state) {
 		case LD_REF_HL_H:
 			cpu_mov_ref_hl8(state, &state->registers.h);
 			break;
+		case LD_REF_HL_L:
+			cpu_mov_ref_hl8(state, &state->registers.l);
+			break;
+		case LD_REF_HL_A:
+			cpu_mov_ref_hl8(state, &state->registers.a);
+			break;
+
 		case LD_L_REF_HL:
 			state->registers.l = mem_get(&state->mem, state->registers.hl);
 			inc_pc(state, 1);
@@ -562,6 +576,28 @@ bool cpu_step(cpu_state* state) {
 		case ADD_HL_DE:
 			state->registers.hl += state->registers.de;
 			inc_pc(state, 1);
+			break;
+
+		case ADD_A_B:
+			cpu_add_reg_to_a(state, state->registers.b);
+			break;
+		case ADD_A_C:
+			cpu_add_reg_to_a(state, state->registers.c);
+			break;
+		case ADD_A_D:
+			cpu_add_reg_to_a(state, state->registers.d);
+			break;
+		case ADD_A_E:
+			cpu_add_reg_to_a(state, state->registers.e);
+			break;
+		case ADD_A_H:
+			cpu_add_reg_to_a(state, state->registers.h);
+			break;
+		case ADD_A_L:
+			cpu_add_reg_to_a(state, state->registers.l);
+			break;
+		case ADD_A_A:
+			cpu_add_reg_to_a(state, state->registers.a);
 			break;
 
 		case JP_NN:
