@@ -42,6 +42,7 @@ typedef enum {
 	LD_D_REF_HL = 0x56,
 
 	LDH_REF_n_A = 0xE0,
+	LDH_REF_C_A = 0xE2,
 	LDH_REF_A_n = 0xF0,
 
 	LD_REF_HL_n = 0x36,
@@ -63,7 +64,11 @@ typedef enum {
 	SUB_A_A = 0x97,
 	SUB_A_REF_HL = 0x96,
 
+	INC_C = 0x0C,
+	INC_E = 0x1C,
 	INC_L = 0x2C,
+	INC_A = 0x3C,
+	
 	INC_B = 0x4,
 	INC_D = 0x14,
 	INC_H = 0x24,

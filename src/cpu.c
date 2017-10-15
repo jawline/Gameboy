@@ -70,7 +70,7 @@ void do_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_ca
 	flag(state, flags);
 }
 
-void cpu_addfix8(cpu_state* state, int8_t v, uint8_t* reg) {
+void cpu_inc8reg(cpu_state* state, int8_t v, uint8_t* reg) {
 	*reg += v;
 	do_flags(state, !(*reg), 0, 0, 0);
 	inc_pc(state, 1);
@@ -125,12 +125,9 @@ void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 	inc_pc(state, 1);
 }
 
-//Save register to FF00h + n 
-void cpu_load_flags_register(cpu_state* state, uint8_t* reg) {
-	const uint16_t ADDR_OFFSET = 0xFF00;
-	uint16_t addr = ADDR_OFFSET + mem_get(&state->mem, state->registers.pc + 1);
-	mem_set(&state->mem, addr, *reg);
-	inc_pc(state, 2);
+void cpu_save_reg_at(cpu_state* state, uint16_t offset, uint8_t addr_offset, uint8_t regval) {
+	uint16_t addr = addr_offset + mem_get(&state->mem, state->registers.pc + 1);
+	mem_set(&state->mem, addr, regval);
 }
 
 void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
@@ -370,16 +367,25 @@ bool cpu_step(cpu_state* state) {
 			cpu_addfix16(state, 1, &state->registers.sp);
 			break;
 		case INC_B:
-			cpu_addfix8(state, 1, &state->registers.b);
+			cpu_inc8reg(state, 1, &state->registers.b);
+			break;
+		case INC_C:
+			cpu_inc8reg(state, 1, &state->registers.c);
+			break;
+		case INC_E:
+			cpu_inc8reg(state, 1, &state->registers.e);
 			break;
 		case INC_L:
-			cpu_addfix8(state, 1, &state->registers.l);
+			cpu_inc8reg(state, 1, &state->registers.l);
+			break;
+		case INC_A:
+			cpu_inc8reg(state, 1, &state->registers.a);
 			break;
 		case INC_D:
-			cpu_addfix8(state, 1, &state->registers.d);
+			cpu_inc8reg(state, 1, &state->registers.d);
 			break;
 		case INC_H:
-			cpu_addfix8(state, 1, &state->registers.h);
+			cpu_inc8reg(state, 1, &state->registers.h);
 			break;
 		case DEC_BC:
 			cpu_addfix16(state, -1, &state->registers.bc);
@@ -419,7 +425,12 @@ bool cpu_step(cpu_state* state) {
 			cpu_jnz_imm_8(state);
 			break;
 		case LDH_REF_n_A:
-			cpu_load_flags_register(state, &state->registers.a);
+			cpu_save_reg_at(state, 0xFF00, mem_get(&state->mem, state->registers.pc + 1), state->registers.a);
+			inc_pc(state, 2);
+			break;
+		case LDH_REF_C_A:
+			cpu_save_reg_at(state, 0xFF00, state->registers.c, state->registers.a);
+			inc_pc(state, 1);
 			break;
 		case LDH_REF_A_n:
 			cpu_save_flags_register(state, &state->registers.a);
