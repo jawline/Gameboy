@@ -12,15 +12,15 @@ const uint16_t BIOS_SIZE = 0x100;
 uint8_t* rom_load(char const* bios_path, char const* rom_path) {
 	uint8_t* rom_mem = malloc(ROM_SIZE);
 	
-	FILE* dat = fopen(rom_path, "rb");
+	/*FILE* dat = fopen(rom_path, "rb");
 	
 	if (!fread(rom_mem, ROM_SIZE, 1, dat)) {
 		printf("Read error (ROM) %s\n", rom_path);
 	}
 
-	fclose(dat);
+	fclose(dat);*/
 
-	dat = fopen(bios_path, "rb");
+	FILE* dat = fopen(bios_path, "rb");
 
 	if (!fread(rom_mem, BIOS_SIZE, 1, dat)) {
 		printf("Read error (BIOS) %s\n", bios_path);

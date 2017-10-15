@@ -16,7 +16,7 @@ const uint8_t CARRY_FLAG = 0x1;
 #define UNSET_FLAG(r, f) r &= ~f
 #define BUILD_FLAG(r, f, v) if (v) { SET_FLAG(r, f); } else { UNSET_FLAG(r, f); }
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG 
 #define DEBUG_OUT(...) printf(__VA_ARGS__)
@@ -26,6 +26,7 @@ const uint8_t CARRY_FLAG = 0x1;
 
 void cpu_init(cpu_state* state) {
 	state->registers.pc = START_PC;
+	state->registers.f = 0;
 }
 
 void inc_pc(cpu_state* state, uint16_t off) {
@@ -135,7 +136,7 @@ void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 }
 
 void cpu_save_reg_at(cpu_state* state, uint16_t offset, uint8_t addr_offset, uint8_t regval) {
-	uint16_t addr = addr_offset + mem_get(&state->mem, state->registers.pc + 1);
+	uint16_t addr = addr_offset + addr_offset;
 	mem_set(&state->mem, addr, regval);
 }
 
@@ -148,7 +149,7 @@ void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
 
 void cpu_save_reg_to_addr_then_dec_addr(cpu_state* state, uint16_t* reg_addr, uint8_t* reg) {
 	mem_set(&state->mem, *reg_addr, *reg);
-	cpu_dec16(state, &state->registers.hl);
+	cpu_dec16(state, reg_addr);
 }
 
 void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
@@ -202,11 +203,11 @@ void cpu_cpl(cpu_state* state, uint8_t* reg) {
 	inc_pc(state, 1);
 }
 
-void cpu_xor_reg(cpu_state* state, uint8_t* reg1, uint8_t v) {
-	*reg1 ^= v;
-	do_flags(state, !(*reg1), 0, 0, 0);
+void cpu_xor_reg(cpu_state* state, uint8_t* reg, uint8_t v) {
+	DEBUG_OUT("XOR %x\n", *reg);
+	*reg = *reg ^ v;
+	do_flags(state, *reg == 0, 0, 0, 0);
 	inc_pc(state, 1);
-	DEBUG_OUT("Final reg val %x\n", *reg1);
 }
 
 void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
@@ -354,8 +355,7 @@ bool cpu_step(cpu_state* state) {
 	uint16_t start_pc = state->registers.pc;
 	DEBUG_OUT("Step PC=0x%02X\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
-
-	DEBUG_OUT("Instr 0x%02X\n", c_instr);
+	DEBUG_OUT("Instr 0x%02X PC(idx):%i mem_get:%02X (%i)\n", c_instr, state->registers.pc, mem_get(&state->mem, state->registers.pc), mem_get(&state->mem, state->registers.pc));
 
 	switch (c_instr) {
 		case NOOP:
@@ -688,7 +688,7 @@ bool cpu_step(cpu_state* state) {
 			return false;
 	}
 
-	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
+	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X SIZE=%i FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, state->registers.pc - start_pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
 
 	return true;
 }

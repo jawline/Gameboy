@@ -7,6 +7,12 @@
 void memory_init(memory* mem, uint8_t* rom) {
 	memset(mem, 0, sizeof(memory));
 	mem->rom = rom;
+	
+	for (unsigned int i = 0; i < 256; i++) {
+		printf("%i:%02X ", i, mem->rom[i]);
+	}
+	printf("\n");
+
 	mem->ram = malloc(8192);
 	mem->vram = malloc(8192);
 	mem->topram = malloc(0xFFFF - 0xFF80);
@@ -102,6 +108,7 @@ uint16_t mem_get16(memory* mem, uint16_t off) {
 }
 
 void mem_set(memory* mem, uint16_t off, uint8_t v) {
+	printf("Set %x to %i", off, v);
 	*ptr(mem, off) = v;
 }
 
