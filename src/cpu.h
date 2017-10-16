@@ -177,6 +177,12 @@ void cpu_init(cpu_state* state);
 bool cpu_step(cpu_state* state);
 
 /**
+ * Extended CPU Table Methods
+ */
+
+bool ext_cpu_step(cpu_state* state);
+
+/**
  * Util Methods
  */
 
