@@ -134,10 +134,6 @@ void cpu_load_a_from_address(cpu_state* state, uint16_t addr) {
 	cpu_inc_pc(state, 1);
 }
 
-void cpu_ret(cpu_state* state) {
-	state->registers.pc = stack_pop16(state);
-}
-
 bool cpu_step(cpu_state* state) {
 	
 	uint16_t start_pc = state->registers.pc;

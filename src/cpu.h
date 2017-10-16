@@ -180,6 +180,7 @@ bool ext_cpu_step(cpu_state* state);
 
 void cpu_call(cpu_state* state, uint16_t address, uint16_t next_instr);
 void cpu_call_nn(cpu_state* state);
+void cpu_ret(cpu_state* state);
 
 /**
  * Util Methods
@@ -190,6 +191,7 @@ uint16_t stack_pop16(cpu_state* state);
 void cpu_inc_pc(cpu_state* state, uint16_t off);
 uint16_t* cpu_util_16_bit_reg(cpu_state* state, uint8_t off);
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble);
+uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off);
 
 /**
  * Flag Methods

@@ -1,12 +1,8 @@
 #include "cpu.h"
 
 void cpu_ld8_n(cpu_state* state, uint8_t* reg) {
-	printf("MEM GET\n");
 	uint8_t lval = mem_get(&state->mem, state->registers.pc + 1);
-
-	printf("MEM GET %x\n", reg);
 	*reg = lval;
-	printf("MEM GET %x\n", reg);
 	cpu_inc_pc(state, 2);
 }
 
