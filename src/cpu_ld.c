@@ -15,25 +15,6 @@ void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val) {
 	cpu_inc_pc(state, 1);
 }
 
-uint8_t* reg_ld_table_offset(cpu_state* state, uint8_t c_instr_lesser_nibble) {
-		switch (c_instr_lesser_nibble) {
-			case 0:
-				return &state->registers.b;
-			case 1:
-				return &state->registers.c;
-			case 2:
-				return &state->registers.d;
-			case 3:
-				return &state->registers.e;
-			case 4:
-				return &state->registers.h;
-			case 5:
-				return &state->registers.l;
-			case 7:
-				return &state->registers.a;
-		}
-}
-
 uint8_t* ld_table_dst_lookup_second(cpu_state* state, uint8_t off) {
 	switch (off) {
 		case 0:
@@ -57,6 +38,11 @@ bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble) {
 
 	cpu_ld16_nn(state, reg);
 	cpu_inc_pc(state, 3);
+}
+
+bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble) {
+	DEBUG_OUT("CPU LD 8 IMM\n");
+	cpu_ld8_n(state, cpu_reg_cela(state, gnibble));
 }
 
 bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
@@ -88,7 +74,7 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 			*dst = mem_get(&state->mem, state->registers.hl);
 			cpu_inc_pc(state, 1);
 		} else {
-			uint8_t* src = reg_ld_table_offset(state, c_instr_lesser_nibble);
+			uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 			cpu_ld8(state, dst, *src);
 		}
 
@@ -97,7 +83,7 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 
 	//Saving a register to HL
 	if (c_instr_greater_nibble == 0x7 && c_instr_lesser_nibble < 0x8) {
-		uint8_t v = *reg_ld_table_offset(state, c_instr_lesser_nibble);
+		uint8_t v = *cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 		mem_set(&state->mem, state->registers.hl, v);
 		cpu_inc_pc(state, 1);
 		return true;
@@ -108,9 +94,10 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 		return false;
 	}
 
-	uint8_t* dst = ld_table_dst_lookup_second(state, c_instr_greater_nibble - 4);
-	uint8_t* src = reg_ld_table_offset(state, c_instr_lesser_nibble - 0x8);
+	printf("%x %x\n", c_instr_greater_nibble, c_instr_lesser_nibble);
 
+	uint8_t* dst = ld_table_dst_lookup_second(state, c_instr_greater_nibble - 4);
+	uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble - 0x8);
 	cpu_ld8(state, dst, *src);
 
 	return true;

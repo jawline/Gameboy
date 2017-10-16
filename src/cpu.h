@@ -21,11 +21,6 @@ typedef enum {
 
 	LD_adr_bc_nn = 0x2,
 
-	LD_C_n = 0x0E,
-	LD_E_n = 0x1E,
-	LD_L_n = 0x2E,
-	LD_A_n = 0x3E,
-
 	LD_A_REF_BC = 0x0A,
 	LD_A_REF_DE = 0x1A,
 
@@ -180,6 +175,13 @@ bool cpu_step(cpu_state* state);
 bool ext_cpu_step(cpu_state* state);
 
 /**
+ * CPU Calls
+ */
+
+void cpu_call(cpu_state* state, uint16_t address, uint16_t next_instr);
+void cpu_call_nn(cpu_state* state);
+
+/**
  * Util Methods
  */
 
@@ -187,6 +189,7 @@ void stack_push16(cpu_state* state, uint16_t v);
 uint16_t stack_pop16(cpu_state* state);
 void cpu_inc_pc(cpu_state* state, uint16_t off);
 uint16_t* cpu_util_16_bit_reg(cpu_state* state, uint8_t off);
+uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble);
 
 /**
  * Flag Methods

@@ -62,7 +62,7 @@ uint8_t view_render(view_t* view, cpu_state* s) {
 	//Update the screen
 	SDL_RenderPresent(view->renderer);
 	
-	SDL_Delay(50);
+	//SDL_Delay(50);
 
 	return 1;
 }
