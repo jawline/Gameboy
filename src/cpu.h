@@ -4,6 +4,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+//#define DEBUG 1
+
+#ifdef DEBUG 
+#define DEBUG_OUT(...) printf(__VA_ARGS__)
+#else
+#define DEBUG_OUT(...)
+#endif
+
 typedef enum {
 	NOOP = 0,
 	RLC_A = 0x6,
@@ -165,7 +173,6 @@ extern const uint8_t PO_FLAG;
 extern const uint8_t SUBTRACT_FLAG;
 extern const uint8_t CARRY_FLAG;
 
-
 void cpu_init(cpu_state* state);
 bool cpu_step(cpu_state* state);
 
@@ -173,7 +180,8 @@ bool cpu_step(cpu_state* state);
  * Util Methods
  */
 
-
+void stack_push16(cpu_state* state, uint16_t v);
+uint16_t stack_pop16(cpu_state* state);
 void cpu_inc_pc(cpu_state* state, uint16_t off);
 
 /**
