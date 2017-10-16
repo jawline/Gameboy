@@ -6,7 +6,7 @@ void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit)
 	DEBUG_OUT("Tested bit R %x\n", tested);
 
 
-	do_flags(state, tested == 0, 0, 1, cpu_is_flag(state, CARRY_FLAG));
+	cpu_set_flags(state, tested == 0, 0, 1, cpu_is_flag(state, CARRY_FLAG));
 }
 
 bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
@@ -75,7 +75,7 @@ bool rl_8bit_reg(cpu_state* state, uint8_t* reg) {
 	DEBUG_OUT("Pre %x v %x\n", *reg, (*reg << 1) | (*reg >> 7));
 	*reg = (*reg << 1) | (*reg >> 7);
 
-	do_flags(state, *reg, 0, 0, bit_7);
+	cpu_set_flags(state, *reg, 0, 0, bit_7);
 
 	return true;
 }

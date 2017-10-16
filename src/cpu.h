@@ -1,10 +1,11 @@
 #ifndef _CPU_DEF_H_
 #define _CPU_DEF_H_
 #include "memory.h"
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #ifdef DEBUG 
 #define DEBUG_OUT(...) printf(__VA_ARGS__)
@@ -18,10 +19,6 @@ typedef enum {
 
 	HALT = 0x76,
 
-	LD_BC_nn = 0x1,
-	LD_DE_nn = 0x11,
-	LD_HL_nn = 0x21,
-	LD_SP_nn = 0x31,
 	LD_adr_bc_nn = 0x2,
 
 	LD_C_n = 0x0E,
@@ -189,11 +186,22 @@ bool ext_cpu_step(cpu_state* state);
 void stack_push16(cpu_state* state, uint16_t v);
 uint16_t stack_pop16(cpu_state* state);
 void cpu_inc_pc(cpu_state* state, uint16_t off);
+uint16_t* cpu_util_16_bit_reg(cpu_state* state, uint8_t off);
+
+/**
+ * Flag Methods
+ */
+
+bool cpu_is_flag(cpu_state* state, uint8_t flags);
+void cpu_set_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_carry, bool carry);
 
 /**
  * LD Table Calls
  */
 
 bool cpu_ld_table(cpu_state* state, uint8_t c_instr);
+void cpu_ld8_n(cpu_state* state, uint8_t* reg);
+void cpu_ld16(cpu_state* state, uint16_t* reg);
+void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val);
 
 #endif //_CPU_DEF_H_

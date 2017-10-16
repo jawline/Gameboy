@@ -113,7 +113,7 @@ uint16_t mem_get16(memory* mem, uint16_t off) {
 }
 
 void mem_set(memory* mem, uint16_t off, uint8_t v) {
-	printf("Set %x to %i", off, v);
+	printf("Set %x to %i\n", off, v);
 	*ptr(mem, off) = v;
 }
 

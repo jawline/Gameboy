@@ -21,7 +21,7 @@ bool cpu_is_flag(cpu_state* state, uint8_t flags) {
 	return (state->registers.f & flags) != 0;
 }
 
-void do_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_carry, bool carry) {
+void cpu_set_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_carry, bool carry) {
 	uint8_t flags = state->registers.f;
 
 	BUILD_FLAG(flags, ZERO_FLAG, zero_flag);

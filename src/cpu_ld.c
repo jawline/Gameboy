@@ -1,5 +1,20 @@
 #include "cpu.h"
 
+void cpu_ld8_n(cpu_state* state, uint8_t* reg) {
+	uint8_t lval = mem_get(&state->mem, state->registers.pc + 1);
+	*reg = lval;
+	cpu_inc_pc(state, 2);
+}
+
+void cpu_ld16_nn(cpu_state* state, uint16_t* reg) {
+	*reg = mem_get16(&state->mem, state->registers.pc + 1);
+}
+
+void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val) {
+	*to = val;
+	cpu_inc_pc(state, 1);
+}
+
 uint8_t* reg_ld_table_offset(cpu_state* state, uint8_t c_instr_lesser_nibble) {
 		switch (c_instr_lesser_nibble) {
 			case 0:
@@ -19,7 +34,32 @@ uint8_t* reg_ld_table_offset(cpu_state* state, uint8_t c_instr_lesser_nibble) {
 		}
 }
 
-bool cpu_ld_table(cpu_state* state, uint8_t c_instr) {
+uint8_t* ld_table_dst_lookup_second(cpu_state* state, uint8_t off) {
+	switch (off) {
+		case 0:
+			return &state->registers.c;
+		case 1:
+			return &state->registers.e;
+		case 2:
+			return &state->registers.l;
+		case 3:
+			return &state->registers.a;
+	}
+
+	DEBUG_OUT("LD OFFSET SHOULD BE UNREACHABLE (DST LOOKUP 2)\n");
+	return 0;
+}
+
+bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble) {
+	DEBUG_OUT("CPU LD 16 IMM\n");
+
+	uint16_t* reg = cpu_util_16_bit_reg(state, gnibble);
+
+	cpu_ld16_nn(state, reg);
+	cpu_inc_pc(state, 3);
+}
+
+bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 	printf("LD Instruction 0x%02X\n", c_instr);
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
@@ -49,7 +89,7 @@ bool cpu_ld_table(cpu_state* state, uint8_t c_instr) {
 			cpu_inc_pc(state, 1);
 		} else {
 			uint8_t* src = reg_ld_table_offset(state, c_instr_lesser_nibble);
-			cpu_mov8(state, dst, *src);
+			cpu_ld8(state, dst, *src);
 		}
 
 		return true;
@@ -58,11 +98,20 @@ bool cpu_ld_table(cpu_state* state, uint8_t c_instr) {
 	//Saving a register to HL
 	if (c_instr_greater_nibble == 0x7 && c_instr_lesser_nibble < 0x8) {
 		uint8_t v = *reg_ld_table_offset(state, c_instr_lesser_nibble);
-		cpu_save_reg_at(state, 0, state->registers.hl, v);
+		mem_set(&state->mem, state->registers.hl, v);
 		cpu_inc_pc(state, 1);
 		return true;
 	}
 
-	printf("Unhandled LD\n");
-	return false;
+	if (c_instr_lesser_nibble == 0xE) {
+		printf("Unhandled LD (HL INSTR)\n");
+		return false;
+	}
+
+	uint8_t* dst = ld_table_dst_lookup_second(state, c_instr_greater_nibble - 4);
+	uint8_t* src = reg_ld_table_offset(state, c_instr_lesser_nibble - 0x8);
+
+	cpu_ld8(state, dst, *src);
+
+	return true;
 }
