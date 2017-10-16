@@ -156,6 +156,15 @@ typedef struct cpu_state {
 	memory mem;
 } cpu_state;
 
+extern const uint8_t SIGN_FLAG;
+extern const uint8_t ZERO_FLAG;
+extern const uint8_t UDOC_FLAG;
+extern const uint8_t HALF_CARRY_FLAG;
+extern const uint8_t UDOC_2_FLAG;
+extern const uint8_t PO_FLAG;
+extern const uint8_t SUBTRACT_FLAG;
+extern const uint8_t CARRY_FLAG;
+
 
 void cpu_init(cpu_state* state);
 bool cpu_step(cpu_state* state);

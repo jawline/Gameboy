@@ -3,19 +3,6 @@
 
 const uint16_t START_PC = 0x0;
 
-const uint8_t SIGN_FLAG = 0x1 << 7;
-const uint8_t ZERO_FLAG = 0x1 << 6;
-const uint8_t UDOC_FLAG = 0x1 << 5;
-const uint8_t HALF_CARRY_FLAG = 0x1 << 4;
-const uint8_t UDOC_2_FLAG = 0x1 << 3;
-const uint8_t PO_FLAG = 0x1 << 2; //Parity or offset
-const uint8_t SUBTRACT_FLAG = 0x1 << 2;
-const uint8_t CARRY_FLAG = 0x1;
-
-#define SET_FLAG(r, f) r |= f
-#define UNSET_FLAG(r, f) r &= ~f
-#define BUILD_FLAG(r, f, v) if (v) { SET_FLAG(r, f); } else { UNSET_FLAG(r, f); }
-
 //#define DEBUG 1
 
 #ifdef DEBUG 
@@ -55,25 +42,6 @@ uint8_t rotl8(const uint8_t value, uint32_t shift) {
     if ((shift &= sizeof(value) * 8 - 1) == 0)
       return value;
     return (value << shift) | (value >> (sizeof(value) * 8 - shift));
-}
-
-void flag(cpu_state* state, uint8_t flags) {
-	state->registers.f = flags;
-}
-
-bool isflag(cpu_state* state, uint8_t flags) {
-	return (state->registers.f & flags) != 0;
-}
-
-void do_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_carry, bool carry) {
-	uint8_t flags = state->registers.f;
-
-	BUILD_FLAG(flags, ZERO_FLAG, zero_flag);
-	BUILD_FLAG(flags, SUBTRACT_FLAG, negative_flag);
-	BUILD_FLAG(flags, HALF_CARRY_FLAG, half_carry);
-	BUILD_FLAG(flags, CARRY_FLAG, carry);
-
-	flag(state, flags);
 }
 
 void cpu_inc_reg8(cpu_state* state, int8_t v, uint8_t* reg) {
@@ -169,7 +137,7 @@ void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 void cpu_jnz_imm_8(cpu_state* state) {
 	const unsigned INSTR_SIZE = 2;
 	DEBUG_OUT("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
-	if (!isflag(state, ZERO_FLAG)) {
+	if (!cpu_is_flag(state, ZERO_FLAG)) {
 		DEBUG_OUT("JR NZ %i from %x\n", ((int8_t) mem_get(&state->mem, state->registers.pc + 1)), state->registers.pc);
 		state->registers.pc += ((int8_t) mem_get(&state->mem, state->registers.pc + 1)) + INSTR_SIZE;
 	} else {
@@ -195,7 +163,7 @@ void cpu_cmp_a_imm_8(cpu_state* state) {
 
 void cpu_cpl(cpu_state* state, uint8_t* reg) {
     *reg = ~(*reg);
-	do_flags(state, isflag(state, ZERO_FLAG), 1, 1, isflag(state, CARRY_FLAG));
+	do_flags(state, cpu_is_flag(state, ZERO_FLAG), 1, 1, cpu_is_flag(state, CARRY_FLAG));
 	cpu_inc_pc(state, 1);
 }
 
@@ -212,7 +180,7 @@ void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit)
 	DEBUG_OUT("Tested bit R %x\n", tested);
 
 
-	do_flags(state, tested == 0, 0, 1, isflag(state, CARRY_FLAG));
+	do_flags(state, tested == 0, 0, 1, cpu_is_flag(state, CARRY_FLAG));
 }
 
 bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
@@ -610,7 +578,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case CALL_Z_nn:
 			
-			if (isflag(state, ZERO_FLAG)) {
+			if (cpu_is_flag(state, ZERO_FLAG)) {
 				cpu_call_nn(state);
 			} else {
 				cpu_inc_pc(state, 3);
@@ -626,7 +594,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 			DEBUG_OUT("RET NZ\n");
 
-			if (!isflag(state, ZERO_FLAG)) {
+			if (!cpu_is_flag(state, ZERO_FLAG)) {
 				cpu_ret(state);
 			} else {
 				cpu_inc_pc(state, 1);
@@ -669,7 +637,7 @@ bool cpu_step(cpu_state* state) {
 		}
 	}
 
-	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X SIZE=%i FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, state->registers.pc - start_pc, isflag(state, ZERO_FLAG), isflag(state, SUBTRACT_FLAG), isflag(state, HALF_CARRY_FLAG), isflag(state, CARRY_FLAG));
+	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X SIZE=%i FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, state->registers.pc - start_pc, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG));
 
 	return true;
 }
