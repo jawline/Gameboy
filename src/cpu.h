@@ -40,26 +40,8 @@ typedef enum {
 	LD_REF_HL_L = 0x75,
 	LD_REF_HL_A = 0x77,
 
-	ADD_A_B = 0x80,
-	ADD_A_C = 0x81,
-	ADD_A_D = 0x82,
-	ADD_A_E = 0x83,
-	ADD_A_H = 0x84,
-	ADD_A_L = 0x85,
-	ADD_A_REF_HL = 0x86,
-	ADD_A_A = 0x87,
-
 	LD_L_REF_HL = 0x6E,
 	LDD_REF_HL_A = 0x32,
-	
-	SUB_A_B = 0x90,
-	SUB_A_C = 0x91,
-	SUB_A_D = 0x92,
-	SUB_A_E = 0x93,
-	SUB_A_H = 0x94,
-	SUB_A_L = 0x95,
-	SUB_A_A = 0x97,
-	SUB_A_REF_HL = 0x96,
 
 	INC_BC = 0x3,
 	INC_DE = 0x13,
@@ -179,6 +161,7 @@ void cpu_ret(cpu_state* state);
 bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble);
 bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
+bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 
 /**
  * Interrupts logic

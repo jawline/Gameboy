@@ -64,3 +64,55 @@ bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 
 	return true;
 }
+
+void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg + v;
+	cpu_set_flags(state, *reg == 0, 0, 0, 0); //TODO: Carry flags
+}
+
+void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg - v;
+	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
+}
+
+void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg && v;
+	cpu_set_flags(state, *reg == 0, 0, 1, 0);
+}
+
+void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg || v;
+	cpu_set_flags(state, *reg == 0, 0, 0, 0);
+}
+
+
+bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
+/*			case LD_L_REF_HL:
+			state->registers.l = mem_get(&state->mem, state->registers.hl);
+			cpu_inc_pc(state, 1);
+			break; */
+	if (lnibble == 0x6) {
+		printf("GRID HL METHODS NOT IMPL YET\n");
+		return false;
+	}
+
+	uint8_t* reg = cpu_reg_bcdehla(state, lnibble);
+
+	switch (gnibble) {
+		case 0x8: //Add
+			cpu_add_reg8(state, &state->registers.a, *reg);
+			break;
+		case 0x9: //Sub
+			cpu_sub_reg8(state, &state->registers.a, *reg);
+			break;
+		case 0xA: //And
+			cpu_and_reg8(state, &state->registers.a, *reg);
+			break;
+		case 0xB: //Or
+			cpu_or_reg8(state, &state->registers.a, *reg);
+			break;
+	}
+
+	cpu_inc_pc(state, 1);
+	return true;
+}

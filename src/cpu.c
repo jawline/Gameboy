@@ -14,12 +14,6 @@ uint8_t rotl8(const uint8_t value, uint32_t shift) {
     return (value << shift) | (value >> (sizeof(value) * 8 - shift));
 }
 
-void cpu_sub8(cpu_state* state, uint8_t* lhs, uint8_t rhs) {
-	*lhs -= rhs;
-	cpu_set_flags(state, !(*lhs), 1, 0, 0); //TODO: Carry flags
-	cpu_inc_pc(state, 1);
-}
-
 void cpu_dec16(cpu_state* state, uint16_t* reg) {
 	*reg -= 1;
 	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
@@ -150,6 +144,10 @@ bool cpu_step(cpu_state* state) {
 		}
 	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0xC || c_instr_lesser_nibble == 0xD)) {
 		if (!cpu_grid_0x00x3_0xC0xD(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
+			return false;
+		}
+	} else if (c_instr_greater_nibble >= 0x8 && c_instr_greater_nibble <= 0xB && c_instr_lesser_nibble < 8) {
+		if (!cpu_grid_arith_0x80xB_0x00x7(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;
 		}
 	} else {

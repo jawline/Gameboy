@@ -92,34 +92,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_mov_ref_hl8(state, &state->registers.a);
 			break;
 
-		case LD_L_REF_HL:
-			state->registers.l = mem_get(&state->mem, state->registers.hl);
-			cpu_inc_pc(state, 1);
-			break;
-		case SUB_A_B:
-			cpu_sub8(state, &state->registers.a, state->registers.b);
-			break;
-		case SUB_A_C:
-			cpu_sub8(state, &state->registers.a, state->registers.c);
-			break;
-		case SUB_A_D:
-			cpu_sub8(state, &state->registers.a, state->registers.d);
-			break;
-		case SUB_A_E:
-			cpu_sub8(state, &state->registers.a, state->registers.e);
-			break;
-		case SUB_A_H:
-			cpu_sub8(state, &state->registers.a, state->registers.h);
-			break;
-		case SUB_A_L:
-			cpu_sub8(state, &state->registers.a, state->registers.l);
-			break;
-		case SUB_A_A:
-			cpu_sub8(state, &state->registers.a, state->registers.a);
-			break;
-		case SUB_A_REF_HL:
-			cpu_sub8(state, &state->registers.a, mem_get(&state->mem, state->registers.hl));
-			break;
 		case LD_D_REF_HL:
 			cpu_ld8(state, &state->registers.d, mem_get(&state->mem, state->registers.hl));
 			break;
@@ -132,28 +104,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case ADD_HL_DE:
 			state->registers.hl += state->registers.de;
 			cpu_inc_pc(state, 1);
-			break;
-
-		case ADD_A_B:
-			cpu_add_reg_to_a(state, state->registers.b);
-			break;
-		case ADD_A_C:
-			cpu_add_reg_to_a(state, state->registers.c);
-			break;
-		case ADD_A_D:
-			cpu_add_reg_to_a(state, state->registers.d);
-			break;
-		case ADD_A_E:
-			cpu_add_reg_to_a(state, state->registers.e);
-			break;
-		case ADD_A_H:
-			cpu_add_reg_to_a(state, state->registers.h);
-			break;
-		case ADD_A_L:
-			cpu_add_reg_to_a(state, state->registers.l);
-			break;
-		case ADD_A_A:
-			cpu_add_reg_to_a(state, state->registers.a);
 			break;
 
 		case JP_NN:
