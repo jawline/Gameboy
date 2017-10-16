@@ -9,18 +9,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			state->registers.a = rotl8(state->registers.a, 1);
 			cpu_inc_pc(state, 1);
 			break;
-		case INC_BC:
-			cpu_addfix16(state, 1, &state->registers.bc);
-			break;
-		case INC_DE:
-			cpu_addfix16(state, 1, &state->registers.de);
-			break;
-		case INC_HL:
-			cpu_addfix16(state, 1, &state->registers.hl);
-			break;
-		case INC_SP:
-			cpu_addfix16(state, 1, &state->registers.sp);
-			break;
+
 		case INC_B:
 			cpu_inc_reg8(state, 1, &state->registers.b);
 			break;

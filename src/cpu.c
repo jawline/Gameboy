@@ -20,11 +20,6 @@ void cpu_inc_reg8(cpu_state* state, int8_t v, uint8_t* reg) {
 	cpu_inc_pc(state, 1);
 }
 
-void cpu_addfix16(cpu_state* state, int16_t v, uint16_t* reg) {
-	*reg += v;
-	cpu_inc_pc(state, 1);
-}
-
 void cpu_sub8(cpu_state* state, uint8_t* lhs, uint8_t rhs) {
 	*lhs -= rhs;
 	cpu_set_flags(state, !(*lhs), 1, 0, 0); //TODO: Carry flags
@@ -40,11 +35,6 @@ void cpu_dec16(cpu_state* state, uint16_t* reg) {
 void cpu_dec8(cpu_state* state, uint8_t* reg) {
 	*reg -= 1;
 	cpu_set_flags(state, !(*reg), 1, 0, 0); //TODO: Carry flags
-	cpu_inc_pc(state, 1);
-}
-
-void cpu_setinterrupts(cpu_state* state, char on) {
-	state->interrupts = on;
 	cpu_inc_pc(state, 1);
 }
 
@@ -154,6 +144,10 @@ bool cpu_step(cpu_state* state) {
 		}
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0xE) {
 		if (!cpu_ld_8_n_list_E(state, c_instr_greater_nibble)) {
+			return false;
+		}
+	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x3) {
+		if (!cpu_inc_16_bit_0x3(state, c_instr_greater_nibble)) {
 			return false;
 		}
 	} else {

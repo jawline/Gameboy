@@ -183,13 +183,23 @@ void cpu_call_nn(cpu_state* state);
 void cpu_ret(cpu_state* state);
 
 /**
+ * Arithmetic operations
+ */
+bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble);
+
+/**
+ * Interrupts logic
+ */
+void cpu_setinterrupts(cpu_state* state, char on);
+
+/**
  * Util Methods
  */
 
 void stack_push16(cpu_state* state, uint16_t v);
 uint16_t stack_pop16(cpu_state* state);
 void cpu_inc_pc(cpu_state* state, uint16_t off);
-uint16_t* cpu_util_16_bit_reg(cpu_state* state, uint8_t off);
+uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off);
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble);
 uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off);
 

@@ -4,7 +4,7 @@ void cpu_inc_pc(cpu_state* state, uint16_t off) {
 	state->registers.pc += off;
 }
 
-uint16_t* cpu_util_16_bit_reg(cpu_state* state, uint8_t off) {
+uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off) {
 	switch (off) {
 		case 0:
 			return &state->registers.bc;

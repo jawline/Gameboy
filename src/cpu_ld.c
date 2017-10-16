@@ -18,15 +18,17 @@ void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val) {
 bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble) {
 	DEBUG_OUT("CPU LD 16 IMM\n");
 
-	uint16_t* reg = cpu_util_16_bit_reg(state, gnibble);
+	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
 
 	cpu_ld16_nn(state, reg);
 	cpu_inc_pc(state, 3);
+	return true;
 }
 
 bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble) {
 	DEBUG_OUT("CPU LD 8 IMM %x\n", gnibble);
 	cpu_ld8_n(state, cpu_reg_cela(state, gnibble));
+	return true;
 }
 
 bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
