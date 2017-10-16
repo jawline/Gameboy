@@ -10,27 +10,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_inc_pc(state, 1);
 			break;
 
-		case INC_B:
-			cpu_inc_reg8(state, 1, &state->registers.b);
-			break;
-		case INC_C:
-			cpu_inc_reg8(state, 1, &state->registers.c);
-			break;
-		case INC_E:
-			cpu_inc_reg8(state, 1, &state->registers.e);
-			break;
-		case INC_L:
-			cpu_inc_reg8(state, 1, &state->registers.l);
-			break;
-		case INC_A:
-			cpu_inc_reg8(state, 1, &state->registers.a);
-			break;
-		case INC_D:
-			cpu_inc_reg8(state, 1, &state->registers.d);
-			break;
-		case INC_H:
-			cpu_inc_reg8(state, 1, &state->registers.h);
-			break;
 		case DEC_BC:
 			cpu_addfix16(state, -1, &state->registers.bc);
 			break;

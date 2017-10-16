@@ -4,7 +4,23 @@ void cpu_inc_pc(cpu_state* state, uint16_t off) {
 	state->registers.pc += off;
 }
 
+uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off) {
+
+	switch (off) {
+		case 0:
+			return &state->registers.b;
+		case 1:
+			return &state->registers.d;
+		case 2:
+			return &state->registers.h;
+	}
+
+	DEBUG_OUT("ERR LOOKUP 8 BIT REG (BDH)\n");
+	return 0;
+}
+
 uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off) {
+
 	switch (off) {
 		case 0:
 			return &state->registers.bc;

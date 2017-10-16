@@ -61,15 +61,6 @@ typedef enum {
 	SUB_A_A = 0x97,
 	SUB_A_REF_HL = 0x96,
 
-	INC_C = 0x0C,
-	INC_E = 0x1C,
-	INC_L = 0x2C,
-	INC_A = 0x3C,
-
-	INC_B = 0x4,
-	INC_D = 0x14,
-	INC_H = 0x24,
-
 	INC_BC = 0x3,
 	INC_DE = 0x13,
 	INC_HL = 0x23,
@@ -186,6 +177,8 @@ void cpu_ret(cpu_state* state);
  * Arithmetic operations
  */
 bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble);
+bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
+bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 
 /**
  * Interrupts logic
@@ -199,6 +192,7 @@ void cpu_setinterrupts(cpu_state* state, char on);
 void stack_push16(cpu_state* state, uint16_t v);
 uint16_t stack_pop16(cpu_state* state);
 void cpu_inc_pc(cpu_state* state, uint16_t off);
+uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off);
 uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off);
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble);
 uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off);

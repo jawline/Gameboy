@@ -14,12 +14,6 @@ uint8_t rotl8(const uint8_t value, uint32_t shift) {
     return (value << shift) | (value >> (sizeof(value) * 8 - shift));
 }
 
-void cpu_inc_reg8(cpu_state* state, int8_t v, uint8_t* reg) {
-	*reg += v;
-	cpu_set_flags(state, !(*reg), 0, 0, 0);
-	cpu_inc_pc(state, 1);
-}
-
 void cpu_sub8(cpu_state* state, uint8_t* lhs, uint8_t rhs) {
 	*lhs -= rhs;
 	cpu_set_flags(state, !(*lhs), 1, 0, 0); //TODO: Carry flags
@@ -133,7 +127,7 @@ bool cpu_step(cpu_state* state) {
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
-
+ 
 	if (c_instr >= 0x40 && c_instr < 0x80 && c_instr != HALT) {
 		if (!cpu_ld_table_large(state, c_instr)) {
 			return false;
@@ -148,6 +142,14 @@ bool cpu_step(cpu_state* state) {
 		}
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x3) {
 		if (!cpu_inc_16_bit_0x3(state, c_instr_greater_nibble)) {
+			return false;
+		}
+	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0x4 || c_instr_lesser_nibble == 0x5)) {
+		if (!cpu_grid_0x00x3_0x40x5(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
+			return false;
+		}
+	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0xC || c_instr_lesser_nibble == 0xD)) {
+		if (!cpu_grid_0x00x3_0xC0xD(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;
 		}
 	} else {
