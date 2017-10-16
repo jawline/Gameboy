@@ -24,33 +24,6 @@ typedef enum {
 	LD_A_REF_BC = 0x0A,
 	LD_A_REF_DE = 0x1A,
 
-	LD_C_A = 0x4F,
-	LD_E_A = 0x5F,
-	LD_L_A = 0x6F,
-
-	LD_C_E = 0x4B,
-	LD_E_E = 0x5B,
-	LD_L_E = 0x6B,
-	LD_A_E = 0x7B,
-
-	LD_B_B = 0x40,
-
-	LD_D_B = 0x50,
-	LD_D_C = 0x51,
-	LD_D_D = 0x52,
-	LD_D_E = 0x53,
-	LD_D_H = 0x54,
-	LD_D_L = 0x55,
-	LD_D_A = 0x57,
-	LD_E_B = 0x58,
-	LD_E_C = 0x59,
-	LD_E_D = 0x5A,
-	LD_L_H = 0x6C,
-	LD_E_H = 0x5c,
-	LD_C_B = 0x48,
-	LD_C_C = 0x49,
-	LD_C_D = 0x4A,
-
 	LD_D_REF_HL = 0x56,
 
 	LDH_REF_n_A = 0xE0,
@@ -186,5 +159,18 @@ typedef struct cpu_state {
 
 void cpu_init(cpu_state* state);
 bool cpu_step(cpu_state* state);
+
+/**
+ * Util Methods
+ */
+
+
+void cpu_inc_pc(cpu_state* state, uint16_t off);
+
+/**
+ * LD Table Calls
+ */
+
+bool cpu_ld_table(cpu_state* state, uint8_t c_instr);
 
 #endif //_CPU_DEF_H_

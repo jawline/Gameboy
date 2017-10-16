@@ -29,10 +29,6 @@ void cpu_init(cpu_state* state) {
 	state->registers.f = 0;
 }
 
-void inc_pc(cpu_state* state, uint16_t off) {
-	state->registers.pc += off;
-}
-
 void stack_push16(cpu_state* state, uint16_t v) {
 	DEBUG_OUT("PUSH 16 %x %x\n", state->registers.sp, v);
 	mem_set16(&state->mem, state->registers.sp, v);
@@ -83,56 +79,56 @@ void do_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool half_ca
 void cpu_inc_reg8(cpu_state* state, int8_t v, uint8_t* reg) {
 	*reg += v;
 	do_flags(state, !(*reg), 0, 0, 0);
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_addfix16(cpu_state* state, int16_t v, uint16_t* reg) {
 	*reg += v;
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_ld16(cpu_state* state, uint16_t* reg) {
 	*reg = mem_get16(&state->mem, state->registers.pc + 1);
-	inc_pc(state, 3);
+	cpu_inc_pc(state, 3);
 }
 
 void cpu_mov8(cpu_state* state, uint8_t* to, uint8_t val) {
 	*to = val;
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_sub8(cpu_state* state, uint8_t* lhs, uint8_t rhs) {
 	*lhs -= rhs;
 	do_flags(state, !(*lhs), 1, 0, 0); //TODO: Carry flags
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_dec16(cpu_state* state, uint16_t* reg) {
 	*reg -= 1;
 	do_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
-	inc_pc(state, 1);	
+	cpu_inc_pc(state, 1);	
 }
 
 void cpu_dec8(cpu_state* state, uint8_t* reg) {
 	*reg -= 1;
 	do_flags(state, !(*reg), 1, 0, 0); //TODO: Carry flags
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_load_8(cpu_state* state, uint8_t* reg) {
 	uint8_t lval = mem_get(&state->mem, state->registers.pc + 1);
 	*reg = lval;
-	inc_pc(state, 2);
+	cpu_inc_pc(state, 2);
 }
 
 void cpu_setinterrupts(cpu_state* state, char on) {
 	state->interrupts = on;
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 	mem_set(&state->mem, state->registers.hl, *reg);
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_save_reg_at(cpu_state* state, uint16_t offset, uint8_t addr, uint8_t regval) {
@@ -144,7 +140,7 @@ void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
 	const uint16_t ADDR_OFFSET = 0xFF00;
 	uint16_t addr = ADDR_OFFSET + mem_get(&state->mem, state->registers.pc + 1);
 	*reg = mem_get(&state->mem, addr);
-	inc_pc(state, 2);
+	cpu_inc_pc(state, 2);
 }
 
 void cpu_save_reg_to_addr_then_dec_addr(cpu_state* state, uint16_t* reg_addr, uint8_t* reg) {
@@ -155,19 +151,19 @@ void cpu_save_reg_to_addr_then_dec_addr(cpu_state* state, uint16_t* reg_addr, ui
 void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
 	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
 	mem_set(&state->mem, addr, *reg);
-	inc_pc(state, 3);
+	cpu_inc_pc(state, 3);
 }
 
 void cpu_load_addr_16_reg16(cpu_state* state, uint16_t* reg) {
 	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
 	mem_set16(&state->mem, addr, *reg);
-	inc_pc(state, 3);
+	cpu_inc_pc(state, 3);
 }
 
 void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 	uint8_t val = mem_get(&state->mem, state->registers.pc + 1);
 	mem_set(&state->mem, state->registers.hl, val);
-	inc_pc(state, 2);
+	cpu_inc_pc(state, 2);
 }
 
 void cpu_jnz_imm_8(cpu_state* state) {
@@ -177,7 +173,7 @@ void cpu_jnz_imm_8(cpu_state* state) {
 		DEBUG_OUT("JR NZ %i from %x\n", ((int8_t) mem_get(&state->mem, state->registers.pc + 1)), state->registers.pc);
 		state->registers.pc += ((int8_t) mem_get(&state->mem, state->registers.pc + 1)) + INSTR_SIZE;
 	} else {
-		inc_pc(state, INSTR_SIZE);
+		cpu_inc_pc(state, INSTR_SIZE);
 	}
 }
 
@@ -194,20 +190,20 @@ void cpu_cp_a(cpu_state* state, uint8_t val) {
 
 void cpu_cmp_a_imm_8(cpu_state* state) {
 	cpu_cp_a(state, mem_get(&state->mem, state->registers.pc + 1));
-	inc_pc(state, 2);
+	cpu_inc_pc(state, 2);
 }
 
 void cpu_cpl(cpu_state* state, uint8_t* reg) {
     *reg = ~(*reg);
 	do_flags(state, isflag(state, ZERO_FLAG), 1, 1, isflag(state, CARRY_FLAG));
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_xor_reg(cpu_state* state, uint8_t* reg, uint8_t v) {
 	DEBUG_OUT("XOR %x\n", *reg);
 	*reg = *reg ^ v;
 	do_flags(state, *reg == 0, 0, 0, 0);
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
@@ -273,7 +269,7 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 		}
 
 		ext_cpu_step_bit_test_8bit_reg(state, reg, selected_bit);
-		inc_pc(state, 1);
+		cpu_inc_pc(state, 1);
 		return true;
 	}
 }
@@ -318,12 +314,12 @@ bool ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 			return false;
 	}
 
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 	return rl_8bit_reg(state, reg);
 }
 
 bool ext_cpu_step(cpu_state* state) {
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 
 	DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
@@ -347,88 +343,26 @@ bool ext_cpu_step(cpu_state* state) {
 void cpu_add_reg_to_a(cpu_state* state, uint8_t reg) {
 	state->registers.a += reg;
 	do_flags(state, state->registers.a == 0, 0, 0, 0); //TODO: Carry flags
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_load_a_from_address(cpu_state* state, uint16_t addr) {
 	state->registers.a = mem_get(&state->mem, addr);
-	inc_pc(state, 1);
+	cpu_inc_pc(state, 1);
 }
 
 void cpu_ret(cpu_state* state) {
 	state->registers.pc = stack_pop16(state);
 }
 
-uint8_t* reg_ld_table_offset(cpu_state* state, uint8_t c_instr_lesser_nibble) {
-		switch (c_instr_lesser_nibble) {
-			case 0:
-				return &state->registers.b;
-			case 1:
-				return &state->registers.c;
-			case 2:
-				return &state->registers.d;
-			case 3:
-				return &state->registers.e;
-			case 4:
-				return &state->registers.h;
-			case 5:
-				return &state->registers.l;
-			case 7:
-				return &state->registers.a;
-			case 8:
-				return &state->registers.b;
-		}
-}
-
-bool cpu_ld_table(cpu_state* state, uint8_t c_instr) {
-	printf("LD Instruction 0x%02X\n", c_instr);
-
-	uint8_t c_instr_greater_nibble = c_instr >> 4;
-	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
-
-	if (c_instr_greater_nibble < 0x7 && c_instr_lesser_nibble < 0x6) {
-		uint8_t* dst;
-		uint8_t* src = reg_ld_table_offset(state, c_instr_lesser_nibble);
-
-		switch (c_instr_greater_nibble) {
-			case 0:
-				dst = &state->registers.b;
-				break;
-			case 1:
-				dst = &state->registers.d;
-				break;
-			case 2:
-				dst = &state->registers.h;
-				break;
-			default:
-				printf("Unhandled LD table %x\n", c_instr_greater_nibble);
-				break;
-		}
-
-		cpu_mov8(state, dst, *src);
-
-		return true;
-	}
-
-	if (c_instr_greater_nibble == 0x7 && c_instr_lesser_nibble < 0x8) {
-		uint8_t v = *reg_ld_table_offset(state, c_instr_lesser_nibble);
-		cpu_save_reg_at(state, 0, state->registers.hl, v);
-		inc_pc(state, 1);
-		return true;
-	}
-
-	printf("Unhandled LD\n");
-	return false;
-}
-
 bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 	switch (c_instr) {
 		case NOOP:
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		case RLC_A:
 			state->registers.a = rotl8(state->registers.a, 1);
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		case INC_BC:
 			cpu_addfix16(state, 1, &state->registers.bc);
@@ -492,7 +426,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case RL_A:
 			rl_8bit_reg(state, &state->registers.a);
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		case LDD_REF_HL_A:
 			cpu_save_reg_to_addr_then_dec_addr(state, &state->registers.hl, &state->registers.a);
@@ -502,11 +436,11 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 		case LDH_REF_n_A:
 			cpu_save_reg_at(state, 0xFF00, mem_get(&state->mem, state->registers.pc + 1), state->registers.a);
-			inc_pc(state, 2);
+			cpu_inc_pc(state, 2);
 			break;
 		case LDH_REF_C_A:
 			cpu_save_reg_at(state, 0xFF00, state->registers.c, state->registers.a);
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		case LDH_REF_A_n:
 			cpu_save_flags_register(state, &state->registers.a);
@@ -533,65 +467,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_load_8(state, &state->registers.a);
 			printf("Set A %x\n", state->registers.a);
 			break;
-		case LD_B_B:
-			cpu_mov8(state, &state->registers.b, state->registers.b);
-			break;
-
-		case LD_C_A:
-			cpu_mov8(state, &state->registers.c, state->registers.a);
-			break;
-		case LD_E_A:
-			cpu_mov8(state, &state->registers.e, state->registers.a);
-			break;
-		case LD_L_A:
-			cpu_mov8(state, &state->registers.l, state->registers.a);
-			break;
-
-		case LD_D_B:
-			cpu_mov8(state, &state->registers.d, state->registers.b);
-			break;
-		case LD_D_C:
-			cpu_mov8(state, &state->registers.d, state->registers.c);
-			break;
-		case LD_D_D:
-			cpu_mov8(state, &state->registers.d, state->registers.d);
-			break;
-		case LD_D_E:
-			cpu_mov8(state, &state->registers.d, state->registers.e);
-			break;
-		case LD_D_H:
-			cpu_mov8(state, &state->registers.d, state->registers.h);
-			break;
-		case LD_D_L:
-			cpu_mov8(state, &state->registers.d, state->registers.l);
-			break;
-		case LD_D_A:
-			cpu_mov8(state, &state->registers.d, state->registers.a);
-			break;
-		case LD_E_H:
-			cpu_mov8(state, &state->registers.e, state->registers.h);
-			break;
-		case LD_E_B:
-			cpu_mov8(state, &state->registers.e, state->registers.b);
-			break;
-		case LD_L_H:
-			cpu_mov8(state, &state->registers.l, state->registers.h);
-			break;
-		case LD_E_C:
-			cpu_mov8(state, &state->registers.e, state->registers.c);
-			break;
-		case LD_E_D:
-			cpu_mov8(state, &state->registers.e, state->registers.d);
-			break;
-		case LD_C_B:
-			cpu_mov8(state, &state->registers.c, state->registers.b);
-			break;
-		case LD_C_C:
-			cpu_mov8(state, &state->registers.c, state->registers.c);
-			break;
-		case LD_C_D:
-			cpu_mov8(state, &state->registers.c, state->registers.d);
-			break;
+		
 		case LD_REF_HL_n:
 			cpu_load_ref_reg_16_imm_8(state);
 			break;
@@ -619,7 +495,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case LD_L_REF_HL:
 			state->registers.l = mem_get(&state->mem, state->registers.hl);
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		case SUB_A_B:
 			cpu_sub8(state, &state->registers.a, state->registers.b);
@@ -648,28 +524,15 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case LD_D_REF_HL:
 			cpu_mov8(state, &state->registers.d, mem_get(&state->mem, state->registers.hl));
 			break;
-		
-		case LD_C_E:
-			cpu_mov8(state, &state->registers.c, state->registers.e);
-			break;
-		case LD_E_E:
-			cpu_mov8(state, &state->registers.e, state->registers.e);
-			break;
-		case LD_L_E:
-			cpu_mov8(state, &state->registers.l, state->registers.e);
-			break;
-		case LD_A_E:
-			cpu_mov8(state, &state->registers.a, state->registers.e);
-			break;
 
 		case LDI_REF_HL_A:
 			state->registers.a = mem_get(&state->mem, state->registers.hl);
 			state->registers.hl++;
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		case ADD_HL_DE:
 			state->registers.hl += state->registers.de;
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 
 		case ADD_A_B:
@@ -733,12 +596,12 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case POP_BC:
 			state->registers.bc = stack_pop16(state);
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 
 		case PUSH_BC:
 			stack_push16(state, state->registers.bc);
-			inc_pc(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		
 		case CALL_nn: 
@@ -750,7 +613,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			if (isflag(state, ZERO_FLAG)) {
 				cpu_call_nn(state);
 			} else {
-				inc_pc(state, 3);
+				cpu_inc_pc(state, 3);
 			}
 
 			break;
@@ -766,7 +629,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			if (!isflag(state, ZERO_FLAG)) {
 				cpu_ret(state);
 			} else {
-				inc_pc(state, 1);
+				cpu_inc_pc(state, 1);
 			}
 
 			break;
