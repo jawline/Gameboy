@@ -138,10 +138,13 @@ void cpu_ret(cpu_state* state);
 /**
  * Arithmetic operations
  */
-bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble);
 bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
+
+void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble);
+void cpu_grid_inc_16(cpu_state* state, uint8_t gnibble);
+
 void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
 void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
 void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
@@ -182,5 +185,13 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr);
 void cpu_ld8_n(cpu_state* state, uint8_t* reg);
 void cpu_ld16(cpu_state* state, uint16_t* reg);
 void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val);
+bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble);
+bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble);
+
+/**
+ * Base Table
+ */
+
+bool cpu_base_table(cpu_state* state, uint8_t c_instr);
 
 #endif //_CPU_DEF_H_

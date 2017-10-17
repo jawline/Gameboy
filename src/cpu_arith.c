@@ -50,12 +50,6 @@ void cpu_inc_reg16(cpu_state* state, uint16_t* reg) {
 	*reg = *reg + 1;
 }
 
-bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble) {
-	cpu_inc_reg16(state, cpu_reg_16_bdhs(state, gnibble));
-	cpu_inc_pc(state, 1);
-	return true;	
-}
-
 bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
 
 	//Row of (HL) isntructions
@@ -104,7 +98,7 @@ void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {
 }
 
 void cpu_grid_inc_16(cpu_state* state, uint8_t gnibble) {
-	uint8_t* reg = cpu_reg_16_bdhs(state, gnibble);
+	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
 	cpu_inc_reg16(state, reg);
 	cpu_inc_pc(state, 1);
 }

@@ -94,10 +94,6 @@ bool cpu_step(cpu_state* state) {
 		if (!cpu_ld_8_n_list_E(state, c_instr_greater_nibble)) {
 			return false;
 		}
-	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x3) {
-		if (!cpu_inc_16_bit_0x3(state, c_instr_greater_nibble)) {
-			return false;
-		}
 	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0x4 || c_instr_lesser_nibble == 0x5)) {
 		if (!cpu_grid_0x00x3_0x40x5(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;
