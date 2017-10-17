@@ -26,6 +26,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 		case LDD_REF_HL_A:
 			cpu_save_reg_to_addr_then_dec_addr(state, &state->registers.hl, &state->registers.a);
+			cpu_inc_pc(state, 1);
 			break;
 		case JR_NZ_n:
 			cpu_jnz_imm_8(state);
@@ -63,10 +64,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			state->registers.hl++;
 			cpu_inc_pc(state, 1);
 			break;
-		case ADD_HL_DE:
-			state->registers.hl += state->registers.de;
-			cpu_inc_pc(state, 1);
-			break;
 
 		case JP_NN:
 			cpu_jump(state, mem_get16(&state->mem, state->registers.pc + 1));
@@ -78,9 +75,11 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case LD_REF_nn_SP:
 			cpu_load_addr_16_reg16(state, &state->registers.sp);
 			break;
+		
 		case XOR_A:
 			cpu_xor_reg(state, &state->registers.a, state->registers.a);
 			break;
+
 		case CP_n:
 			cpu_cmp_a_imm_8(state);
 			break;

@@ -2,12 +2,34 @@
 
 void cpu_inc_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg + 1;
-	cpu_set_flags(state, *reg == 0, 0, 0, 0);
+	uint8_t third_bit_carried = (*reg & 1) && (*reg & 2) && (*reg & 4);
+	cpu_set_flags(state, *reg == 0, 0, third_bit_carried, cpu_is_flag(state, CARRY_FLAG));
 }
 
 void cpu_dec_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg - 1;
+	cpu_set_flags(state, *reg == 0, 1, 0, cpu_is_flag(state, CARRY_FLAG)); //TODO: Carry flags
+}
+
+void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	uint16_t larger_add = *reg + v;
+	*reg = *reg + v;
+	cpu_set_flags(state, *reg == 0, 0, larger_add > 16, larger_add > 256); //TODO: Carry flags
+}
+
+void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg - v;
 	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
+}
+
+void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg && v;
+	cpu_set_flags(state, *reg == 0, 0, 1, 0);
+}
+
+void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg || v;
+	cpu_set_flags(state, *reg == 0, 0, 0, 0);
 }
 
 void cpu_dec_reg16(cpu_state* state, uint16_t* reg) {
@@ -66,26 +88,6 @@ bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 	cpu_inc_pc(state, 1);
 
 	return true;
-}
-
-void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	*reg = *reg + v;
-	cpu_set_flags(state, *reg == 0, 0, 0, 0); //TODO: Carry flags
-}
-
-void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	*reg = *reg - v;
-	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
-}
-
-void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	*reg = *reg && v;
-	cpu_set_flags(state, *reg == 0, 0, 1, 0);
-}
-
-void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	*reg = *reg || v;
-	cpu_set_flags(state, *reg == 0, 0, 0, 0);
 }
 
 void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {

@@ -1,17 +1,11 @@
 #include "cpu.h"
 #include <stdio.h>
 
-const uint16_t START_PC = 0x100;
+const uint16_t START_PC = 0x0;
 
 void cpu_init(cpu_state* state) {
 	state->registers.pc = START_PC;
 	state->registers.f = 0;
-}
-
-void cpu_dec16(cpu_state* state, uint16_t* reg) {
-	*reg -= 1;
-	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
-	cpu_inc_pc(state, 1);	
 }
 
 void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
@@ -28,7 +22,7 @@ void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
 
 void cpu_save_reg_to_addr_then_dec_addr(cpu_state* state, uint16_t* reg_addr, uint8_t* reg) {
 	mem_set(&state->mem, *reg_addr, *reg);
-	cpu_dec16(state, reg_addr);
+	cpu_dec_reg16(state, reg);
 }
 
 void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
