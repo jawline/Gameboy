@@ -11,10 +11,19 @@ void cpu_dec_reg8(cpu_state* state, uint8_t* reg) {
 	cpu_set_flags(state, *reg == 0, 1, 0, cpu_is_flag(state, CARRY_FLAG)); //TODO: Carry flags
 }
 
+bool bit_7_carry(uint8_t v1, uint8_t v2) {
+	return (v1 + v2) < v1;
+}
+
+bool bit_3_carry(uint8_t v1, uint8_t v2) {
+	return ((v1 << 4) + (v2 << 4)) < (v1 << 4);
+}
+
 void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	uint16_t larger_add = *reg + v;
+	uint8_t bit_3 = bit_3_carry(*reg, v);
+	uint8_t bit_7 = bit_7_carry(*reg, v);
 	*reg = *reg + v;
-	cpu_set_flags(state, *reg == 0, 0, larger_add > 16, larger_add > 256); //TODO: Carry flags
+	cpu_set_flags(state, *reg == 0, 0, bit_3, bit_7);
 }
 
 void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
@@ -116,10 +125,13 @@ void cpu_rl_reg8(cpu_state* state, uint8_t* reg) {
 		*reg = *reg | 1;
 	}
 
+	printf("RL REG8\n");
+
 	cpu_set_flags(state, *reg == 0, 0, 0, next_carry);
 }
 
 void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
+	printf("RL REG8\n");
 
 	//We rotate a into the carry so
 	//its a left shift of 1 carrying

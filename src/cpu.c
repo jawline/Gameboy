@@ -125,7 +125,7 @@ bool cpu_step(cpu_state* state) {
 		}
 	}
 
-	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X SIZE=%i HL=0x%04X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, state->registers.pc - start_pc, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG));
+	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X SIZE=%i BC=0x%04X AF=0x%04X DE=0x%04X HL=0x%04X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, state->registers.pc - start_pc, state->registers.bc, state->registers.af, state->registers.de, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG));
 
 	return true;
 }

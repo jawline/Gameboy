@@ -2,6 +2,12 @@
 #define _MEMORY_DEF_H_
 #include <stdint.h>
 
+#ifdef DEBUG 
+#define MEMORY_DEBUG(...) printf(__VA_ARGS__)
+#else
+#define MEMORY_DEBUG(...)
+#endif
+
 typedef struct {
 	uint8_t* rom;
 	uint8_t* ram;

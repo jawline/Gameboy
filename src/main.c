@@ -31,6 +31,8 @@ int main(int argc, char const* const* argv) {
 	uint8_t ticks = 0;
 #endif
 
+	unsigned long total_count = 0;
+
 	while (cpu_step(&s)) {
 #ifdef VIEW_ENABLED
 		if (ticks % 30 == 0 && !view_render(&view, &s)) {
@@ -38,6 +40,7 @@ int main(int argc, char const* const* argv) {
 		}
 		ticks++;
 #endif
+		total_count++;
 	}
 
 #ifdef VIEW_ENABLED
