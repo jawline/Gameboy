@@ -125,6 +125,8 @@ bool cpu_step(cpu_state* state) {
 		}
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0xB) {
 		cpu_grid_dec_16(state, c_instr_greater_nibble);
+	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x3) {
+		cpu_grid_inc_16(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble >= 0x8 && c_instr_greater_nibble <= 0xB && c_instr_lesser_nibble < 8) {
 		if (!cpu_grid_arith_0x80xB_0x00x7(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;

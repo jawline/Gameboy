@@ -35,14 +35,8 @@ typedef enum {
 	LD_L_REF_HL = 0x6E,
 	LDD_REF_HL_A = 0x32,
 
-	INC_BC = 0x3,
-	INC_DE = 0x13,
-	INC_HL = 0x23,
-	INC_SP = 0x33,
-
 	POP_BC = 0xC1,
 	PUSH_BC = 0xC5,
-
 
 	RL_A = 0x17,
 
