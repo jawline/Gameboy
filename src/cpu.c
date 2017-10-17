@@ -13,22 +13,6 @@ void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 	cpu_inc_pc(state, 1);
 }
 
-void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
-	uint8_t val = mem_get(&state->mem, state->registers.pc + 1);
-	mem_set(&state->mem, state->registers.hl, val);
-	cpu_inc_pc(state, 2);
-}
-
-void cpu_cp_a(cpu_state* state, uint8_t val) {
-	uint8_t res = state->registers.a - val;
-	cpu_set_flags(state, !res, 1, 0, 0);
-}
-
-void cpu_cmp_a_imm_8(cpu_state* state) {
-	cpu_cp_a(state, mem_get(&state->mem, state->registers.pc + 1));
-	cpu_inc_pc(state, 2);
-}
-
 void cpu_cpl(cpu_state* state, uint8_t* reg) {
     *reg = ~(*reg);
 	cpu_set_flags(state, cpu_is_flag(state, ZERO_FLAG), 1, 1, cpu_is_flag(state, CARRY_FLAG));
@@ -45,11 +29,6 @@ void cpu_xor_reg(cpu_state* state, uint8_t* reg, uint8_t v) {
 void cpu_add_reg_to_a(cpu_state* state, uint8_t reg) {
 	state->registers.a += reg;
 	cpu_set_flags(state, state->registers.a == 0, 0, 0, 0); //TODO: Carry flags
-	cpu_inc_pc(state, 1);
-}
-
-void cpu_load_a_from_address(cpu_state* state, uint16_t addr) {
-	state->registers.a = mem_get(&state->mem, addr);
 	cpu_inc_pc(state, 1);
 }
 

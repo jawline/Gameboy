@@ -54,7 +54,6 @@ typedef enum {
 	LDI_REF_HL_A = 0x22,
 	JP_NN = 0xC3,
 	JR_NZ_n = 0x20,
-	XOR_A = 0xAF,
 
 	CPL_A = 0x2F,
 	CP_n = 0xFE,
@@ -151,7 +150,9 @@ void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
 void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
 void cpu_dec_reg16(cpu_state* state, uint16_t* reg);
 void cpu_inc_reg16(cpu_state* state, uint16_t* reg);
+
 void cpu_rl_reg8(cpu_state* state, uint8_t* reg);
+void cpu_rlc_reg8(cpu_state* state, uint8_t* reg);
 
 /**
  * Interrupts logic

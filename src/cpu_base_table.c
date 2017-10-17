@@ -49,14 +49,18 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case LD_A_REF_BC:
-			cpu_load_a_from_address(state, state->registers.bc);
+			state->registers.a = mem_get(&state->mem, state->registers.bc);
+			cpu_inc_pc(state, 1);
 			break;
+
 		case LD_A_REF_DE:
-			cpu_load_a_from_address(state, state->registers.de);
+			state->registers.a = mem_get(&state->mem, state->registers.de);
+			cpu_inc_pc(state, 1);
 			break;
 		
 		case LD_REF_HL_n:
-			cpu_load_ref_reg_16_imm_8(state);
+			mem_set(&state->mem, state->registers.hl, mem_get(&state->mem, state->registers.pc + 1));
+			cpu_inc_pc(state, 2);
 			break;
 
 		case LD_D_REF_HL:
@@ -81,13 +85,10 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			mem_set16(&state->mem, mem_get16(&state->mem, state->registers.pc + 1), state->registers.sp);
 			cpu_inc_pc(state, 3);
 			break;
-		
-		case XOR_A:
-			cpu_xor_reg(state, &state->registers.a, state->registers.a);
-			break;
 
 		case CP_n:
-			cpu_cmp_a_imm_8(state);
+			cpu_set_flags(state, (state->registers.a - mem_get(&state->mem, state->registers.pc + 1)) == 0, 1, 0, 0); //TODO: Carry flags
+			cpu_inc_pc(state, 2);
 			break;
 
 		case CPL_A:
