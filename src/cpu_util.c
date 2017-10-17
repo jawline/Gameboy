@@ -37,6 +37,7 @@ uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off) {
 }
 
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble) {
+	
 	switch (c_instr_lesser_nibble) {
 		case 0:
 			return &state->registers.b;

@@ -142,6 +142,13 @@ bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble);
 bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
+void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
+void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
+void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
+void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
+void cpu_dec_reg16(cpu_state* state, uint16_t* reg);
+void cpu_inc_reg16(cpu_state* state, uint16_t* reg);
+void cpu_rl_reg8(cpu_state* state, uint8_t* reg);
 
 /**
  * Interrupts logic

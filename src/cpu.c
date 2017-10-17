@@ -20,11 +20,6 @@ void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
 	cpu_inc_pc(state, 2);
 }
 
-void cpu_save_reg_to_addr_then_dec_addr(cpu_state* state, uint16_t* reg_addr, uint8_t* reg) {
-	mem_set(&state->mem, *reg_addr, *reg);
-	cpu_dec_reg16(state, reg);
-}
-
 void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
 	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
 	mem_set(&state->mem, addr, *reg);

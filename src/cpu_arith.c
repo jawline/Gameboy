@@ -42,6 +42,7 @@ void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 }
 
 void cpu_dec_reg16(cpu_state* state, uint16_t* reg) {
+	printf("Dec %x\n", *reg);
 	*reg = *reg - 1;
 }
 
@@ -50,9 +51,7 @@ void cpu_inc_reg16(cpu_state* state, uint16_t* reg) {
 }
 
 bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble) {
-	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
-	*reg = *reg + 1;
-	cpu_set_flags(state, *reg == 0, 0, 0, 0);
+	cpu_inc_reg16(state, gnibble);
 	cpu_inc_pc(state, 1);
 	return true;	
 }

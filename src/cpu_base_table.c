@@ -25,7 +25,8 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_inc_pc(state, 1);
 			break;
 		case LDD_REF_HL_A:
-			cpu_save_reg_to_addr_then_dec_addr(state, &state->registers.hl, &state->registers.a);
+			mem_set(&state->mem, state->registers.hl, state->registers.a);
+			cpu_dec_reg16(state, &state->registers.hl);
 			cpu_inc_pc(state, 1);
 			break;
 		case JR_NZ_n:
