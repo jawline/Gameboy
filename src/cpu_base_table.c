@@ -92,7 +92,9 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case CPL_A:
-			cpu_cpl(state, &state->registers.a);
+		    state->registers.a = ~state->registers.a;
+			cpu_set_flags(state, cpu_is_flag(state, ZERO_FLAG), 1, 1, cpu_is_flag(state, CARRY_FLAG));
+			cpu_inc_pc(state, 1);
 			break;
 
 		case ENABLE_INTERRUPTS:

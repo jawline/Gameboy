@@ -13,12 +13,6 @@ void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 	cpu_inc_pc(state, 1);
 }
 
-void cpu_cpl(cpu_state* state, uint8_t* reg) {
-    *reg = ~(*reg);
-	cpu_set_flags(state, cpu_is_flag(state, ZERO_FLAG), 1, 1, cpu_is_flag(state, CARRY_FLAG));
-	cpu_inc_pc(state, 1);
-}
-
 void cpu_xor_reg(cpu_state* state, uint8_t* reg, uint8_t v) {
 	DEBUG_OUT("XOR %x\n", *reg);
 	*reg = *reg ^ v;
