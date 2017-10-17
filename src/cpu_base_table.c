@@ -32,18 +32,21 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case JR_NZ_n:
 			cpu_jnz_imm_8(state);
 			break;
-		case LDH_REF_n_A:
-			mem_set(&state->mem, 0xFF00 + mem_get(&state->mem, state->registers.pc + 1), state->registers.a);
-			cpu_inc_pc(state, 2);
-			break;
+
 		case LDH_REF_C_A:
 			mem_set(&state->mem, 0xFF00 + state->registers.c, state->registers.a);
 			cpu_inc_pc(state, 1);
 			break;
-		case LDH_REF_A_n:
-			cpu_save_flags_register(state, &state->registers.a);
+
+		case LDH_REF_n_A:
+			mem_set(&state->mem, 0xFF00 + mem_get(&state->mem, state->registers.pc + 1), state->registers.a);
+			cpu_inc_pc(state, 2);
 			break;
 
+		case LDH_REF_A_n:
+			state->registers.a = mem_get(&state->mem, 0xFF00 + mem_get(&state->mem, state->registers.pc + 1));
+			cpu_inc_pc(state, 2);
+			break;
 
 		case LD_A_REF_BC:
 			cpu_load_a_from_address(state, state->registers.bc);
@@ -71,10 +74,12 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case LD_REF_nn_A:
-			cpu_load_addr_16_reg(state, &state->registers.a);
+			mem_set(&state->mem, mem_get16(&state->mem, state->registers.pc + 1), state->registers.a);
+			cpu_inc_pc(state, 3);
 			break;
 		case LD_REF_nn_SP:
-			cpu_load_addr_16_reg16(state, &state->registers.sp);
+			mem_set16(&state->mem, mem_get16(&state->mem, state->registers.pc + 1), state->registers.sp);
+			cpu_inc_pc(state, 3);
 			break;
 		
 		case XOR_A:

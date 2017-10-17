@@ -13,25 +13,6 @@ void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 	cpu_inc_pc(state, 1);
 }
 
-void cpu_save_flags_register(cpu_state* state, uint8_t* reg) {
-	const uint16_t ADDR_OFFSET = 0xFF00;
-	uint16_t addr = ADDR_OFFSET + mem_get(&state->mem, state->registers.pc + 1);
-	*reg = mem_get(&state->mem, addr);
-	cpu_inc_pc(state, 2);
-}
-
-void cpu_load_addr_16_reg(cpu_state* state, uint8_t* reg) {
-	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
-	mem_set(&state->mem, addr, *reg);
-	cpu_inc_pc(state, 3);
-}
-
-void cpu_load_addr_16_reg16(cpu_state* state, uint16_t* reg) {
-	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
-	mem_set16(&state->mem, addr, *reg);
-	cpu_inc_pc(state, 3);
-}
-
 void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 	uint8_t val = mem_get(&state->mem, state->registers.pc + 1);
 	mem_set(&state->mem, state->registers.hl, val);

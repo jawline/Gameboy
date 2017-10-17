@@ -189,6 +189,12 @@ bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble);
 bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble);
 
 /**
+ * CPU Jumps
+ */
+
+void cpu_jump(cpu_state* state, uint16_t address);
+
+/**
  * Base Table
  */
 
