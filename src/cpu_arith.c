@@ -123,13 +123,10 @@ void cpu_rl_reg8(cpu_state* state, uint8_t* reg) {
 		*reg = *reg | 1;
 	}
 
-	printf("RL REG8\n");
-
 	cpu_set_flags(state, *reg == 0, 0, 0, next_carry);
 }
 
 void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
-	printf("RL REG8\n");
 
 	//We rotate a into the carry so
 	//its a left shift of 1 carrying
