@@ -1,17 +1,11 @@
 #include "cpu.h"
 #include <stdio.h>
 
-const uint16_t START_PC = 0x0;
+const uint16_t START_PC = 0x100;
 
 void cpu_init(cpu_state* state) {
 	state->registers.pc = START_PC;
 	state->registers.f = 0;
-}
-
-uint8_t rotl8(const uint8_t value, uint32_t shift) {
-    if ((shift &= sizeof(value) * 8 - 1) == 0)
-      return value;
-    return (value << shift) | (value >> (sizeof(value) * 8 - shift));
 }
 
 void cpu_dec16(cpu_state* state, uint16_t* reg) {
