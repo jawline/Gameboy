@@ -21,7 +21,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_inc_pc(state, 1);
 			break;
 		case RL_A:
-			rl_8bit_reg(state, &state->registers.a);
+			cpu_rl_reg8(state, &state->registers.a);
 			cpu_inc_pc(state, 1);
 			break;
 		case LDD_REF_HL_A:

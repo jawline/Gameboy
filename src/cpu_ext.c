@@ -33,83 +33,19 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 		return false;
 	} else {
 		//It's an 8 bit reg instr
-		uint8_t* reg;
-
-		switch (c_instr_lesser_nibble) {
-			case 0:
-				reg = &state->registers.b;
-				break;
-			case 1:
-				reg = &state->registers.c;
-				break;
-			case 2:
-				reg = &state->registers.d;
-				break;
-			case 3:
-				reg = &state->registers.e;
-				break;
-			case 4:
-				reg = &state->registers.h;
-				break;
-			case 5:
-				reg = &state->registers.l;
-				break;
-			case 7:
-				reg = &state->registers.a;
-				break;
-			default:
-				printf("Error in reg table");
-				return false;
-		}
-
+		uint8_t* reg = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 		ext_cpu_step_bit_test_8bit_reg(state, reg, selected_bit);
 		cpu_inc_pc(state, 1);
 		return true;
 	}
 }
 
-bool rl_8bit_reg(cpu_state* state, uint8_t* reg) {
-
-	uint8_t bit_7 = *reg & (1 << 7);
-
-	DEBUG_OUT("Pre %x v %x\n", *reg, (*reg << 1) | (*reg >> 7));
-	*reg = (*reg << 1) | (*reg >> 7);
-
-	cpu_set_flags(state, *reg, 0, 0, bit_7);
-
-	return true;
-}
-
 bool ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
-	uint8_t* reg;
-
-	switch (c_instr_lesser_nibble) {
-		case 0:
-			reg = &state->registers.b;
-			break;
-		case 1:
-			reg = &state->registers.c;
-			break;
-		case 2:
-			reg = &state->registers.d;
-			break;
-		case 3:
-			reg = &state->registers.e;
-			break;
-		case 4:
-			reg = &state->registers.h;
-			break;
-		case 5:
-			reg = &state->registers.l;
-			break;
-		default:
-			printf("Bad Table EXT_CPU_RL_8BIT\n");
-			return false;
-	}
+	uint8_t* reg = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 
 	cpu_inc_pc(state, 1);
-	return rl_8bit_reg(state, reg);
+	return cpu_rl_reg8(state, reg);
 }
 
 bool ext_cpu_step(cpu_state* state) {
