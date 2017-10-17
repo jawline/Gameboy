@@ -17,10 +17,9 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_inc_pc(state, 1);
 			break;
 		case RLC_A:
-			state->registers.a = rotl8(state->registers.a, 1);
+			cpu_rlc_reg8(state, &state->registers.a);
 			cpu_inc_pc(state, 1);
 			break;
-
 		case RL_A:
 			rl_8bit_reg(state, &state->registers.a);
 			cpu_inc_pc(state, 1);

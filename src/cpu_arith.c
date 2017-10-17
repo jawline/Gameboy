@@ -90,6 +90,25 @@ void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {
 	cpu_inc_pc(state, 1);
 }
 
+void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
+	uint8_t carry_bit = cpu_is_flag(state, CARRY_FLAG);
+	uint8_t next_carry = 0;
+	
+	//We rotate a into the carry so
+	//its a left shift of 1 carrying
+	//the 8th bit at the start into the carry
+	if (*reg & (1 << 7)) {
+		next_carry = 1;
+	}
+
+	*reg = *reg << 1;
+
+	if (carry_bit) {
+		*reg = *reg | 1;
+	}
+
+	cpu_set_flags(state, *reg == 0, 0, 0, next_carry);
+}
 
 bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
 /*			case LD_L_REF_HL:
