@@ -4,6 +4,8 @@
 #include "types.h"
 #include "view/view.h"
 
+//#define VIEW_ENABLED
+
 int main(int argc, char const* const* argv) {
 	cpu_state s;
 
@@ -19,17 +21,28 @@ int main(int argc, char const* const* argv) {
 
 	printf("Big %x low %x high %x\n", big.full, big.low, big.high);
 
+#ifdef VIEW_ENABLED
 	view_t view;
 
-	//if (!view_init(&view)) {
-	//	return 1;
-	//}
+	if (!view_init(&view)) {
+		return 1;
+	}
+
+	uint8_t ticks = 0;
+#endif
 
 	while (cpu_step(&s)) {
-	//	if (!view_render(&view, &s)) {
-	//		break;
-	//	}
+#ifdef VIEW_ENABLED
+		if (ticks % 30 == 0 && !view_render(&view, &s)) {
+			break;
+		}
+		ticks++;
+#endif
 	}
+
+#ifdef VIEW_ENABLED
+	view_render(&view, &s);
+#endif
 
 	return 0;
 }

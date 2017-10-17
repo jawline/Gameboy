@@ -32,14 +32,6 @@ typedef enum {
 
 	LD_REF_HL_n = 0x36,
 
-	LD_REF_HL_B = 0x70,
-	LD_REF_HL_C = 0x71,
-	LD_REF_HL_D = 0x72,
-	LD_REF_HL_E = 0x73,
-	LD_REF_HL_H = 0x74,
-	LD_REF_HL_L = 0x75,
-	LD_REF_HL_A = 0x77,
-
 	LD_L_REF_HL = 0x6E,
 	LDD_REF_HL_A = 0x32,
 
@@ -47,16 +39,6 @@ typedef enum {
 	INC_DE = 0x13,
 	INC_HL = 0x23,
 	INC_SP = 0x33,
-	
-	DEC_BC = 0x0B,
-	DEC_H = 0x25,
-	DEC_D = 0x15,
-	DEC_B = 0x05,
-
-	DEC_C = 0xD,
-	DEC_E = 0x1D,
-	DEC_L = 0x2D,
-	DEC_A = 0x3D,
 
 	POP_BC = 0xC1,
 	PUSH_BC = 0xC5,
@@ -148,6 +130,11 @@ bool cpu_step(cpu_state* state);
 bool ext_cpu_step(cpu_state* state);
 
 /**
+ * Interrupt calls
+ */
+void cpu_setinterrupts(cpu_state* state, uint8_t on);
+
+/**
  * CPU Calls
  */
 
@@ -166,7 +153,7 @@ bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lni
 /**
  * Interrupts logic
  */
-void cpu_setinterrupts(cpu_state* state, char on);
+void cpu_setinterrupts(cpu_state* state, uint8_t on);
 
 /**
  * Util Methods
@@ -191,7 +178,7 @@ void cpu_set_flags(cpu_state* state, bool zero_flag, bool negative_flag, bool ha
  * LD Table Calls
  */
 
-bool cpu_ld_table(cpu_state* state, uint8_t c_instr);
+bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr);
 void cpu_ld8_n(cpu_state* state, uint8_t* reg);
 void cpu_ld16(cpu_state* state, uint16_t* reg);
 void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val);

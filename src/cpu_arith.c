@@ -1,10 +1,5 @@
 #include "cpu.h"
 
-void cpu_addfix16(cpu_state* state, int16_t v, uint16_t* reg) {
-	*reg = *reg + v;
-	cpu_inc_pc(state, 1);
-}
-
 void cpu_inc_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg + 1;
 	cpu_set_flags(state, *reg == 0, 0, 0, 0);
@@ -13,6 +8,10 @@ void cpu_inc_reg8(cpu_state* state, uint8_t* reg) {
 void cpu_dec_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg - 1;
 	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
+}
+
+void cpu_dec_reg16(cpu_state* state, uint16_t* reg) {
+	*reg = *reg - 1;
 }
 
 bool cpu_inc_16_bit_0x3(cpu_state* state, uint8_t gnibble) {
@@ -83,6 +82,12 @@ void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	*reg = *reg || v;
 	cpu_set_flags(state, *reg == 0, 0, 0, 0);
+}
+
+void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {
+	uint8_t* reg = cpu_reg_16_bdhs(state, gnibble);
+	cpu_dec_reg16(state, reg);
+	cpu_inc_pc(state, 1);
 }
 
 

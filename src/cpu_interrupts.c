@@ -1,6 +1,5 @@
 #include "cpu.h"
 
-void cpu_setinterrupts(cpu_state* state, char on) {
+void cpu_setinterrupts(cpu_state* state, uint8_t on) {
 	state->interrupts = on;
-	cpu_inc_pc(state, 1);
 }

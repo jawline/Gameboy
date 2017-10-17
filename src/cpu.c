@@ -20,12 +20,6 @@ void cpu_dec16(cpu_state* state, uint16_t* reg) {
 	cpu_inc_pc(state, 1);	
 }
 
-void cpu_dec8(cpu_state* state, uint8_t* reg) {
-	*reg -= 1;
-	cpu_set_flags(state, !(*reg), 1, 0, 0); //TODO: Carry flags
-	cpu_inc_pc(state, 1);
-}
-
 void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
 	mem_set(&state->mem, state->registers.hl, *reg);
 	cpu_inc_pc(state, 1);
@@ -59,23 +53,6 @@ void cpu_load_ref_reg_16_imm_8(cpu_state* state) {
 	uint8_t val = mem_get(&state->mem, state->registers.pc + 1);
 	mem_set(&state->mem, state->registers.hl, val);
 	cpu_inc_pc(state, 2);
-}
-
-void cpu_jnz_imm_8(cpu_state* state) {
-	const unsigned INSTR_SIZE = 2;
-	DEBUG_OUT("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
-	if (!cpu_is_flag(state, ZERO_FLAG)) {
-		DEBUG_OUT("JR NZ %i from %x\n", ((int8_t) mem_get(&state->mem, state->registers.pc + 1)), state->registers.pc);
-		state->registers.pc += ((int8_t) mem_get(&state->mem, state->registers.pc + 1)) + INSTR_SIZE;
-	} else {
-		cpu_inc_pc(state, INSTR_SIZE);
-	}
-}
-
-void cpu_jump_imm_16(cpu_state* state) {
-	uint16_t addr = mem_get16(&state->mem, state->registers.pc + 1);
-	state->registers.pc = addr;
-	DEBUG_OUT("Jump Immediate: %x\n", addr);
 }
 
 void cpu_cp_a(cpu_state* state, uint8_t val) {
@@ -146,6 +123,8 @@ bool cpu_step(cpu_state* state) {
 		if (!cpu_grid_0x00x3_0xC0xD(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;
 		}
+	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0xB) {
+		cpu_grid_dec_16(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble >= 0x8 && c_instr_greater_nibble <= 0xB && c_instr_lesser_nibble < 8) {
 		if (!cpu_grid_arith_0x80xB_0x00x7(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;

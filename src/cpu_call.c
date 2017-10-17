@@ -11,5 +11,6 @@ void cpu_call_nn(cpu_state* state) {
 }
 
 void cpu_ret(cpu_state* state) {
+	DEBUG_OUT("CPU RET INSTR\n");
 	state->registers.pc = stack_pop16(state);
 }

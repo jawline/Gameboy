@@ -1,5 +1,16 @@
 #include "cpu.h"
 
+void cpu_jnz_imm_8(cpu_state* state) {
+	const unsigned INSTR_SIZE = 2;
+	DEBUG_OUT("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
+	if (!cpu_is_flag(state, ZERO_FLAG)) {
+		DEBUG_OUT("JR NZ %i from %x\n", ((int8_t) mem_get(&state->mem, state->registers.pc + 1)), state->registers.pc);
+		state->registers.pc += ((int8_t) mem_get(&state->mem, state->registers.pc + 1)) + INSTR_SIZE;
+	} else {
+		cpu_inc_pc(state, INSTR_SIZE);
+	}
+}
+
 bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 	switch (c_instr) {
 		case NOOP:
@@ -8,33 +19,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case RLC_A:
 			state->registers.a = rotl8(state->registers.a, 1);
 			cpu_inc_pc(state, 1);
-			break;
-
-		case DEC_BC:
-			cpu_addfix16(state, -1, &state->registers.bc);
-			break;
-
-		case DEC_H:
-			cpu_dec8(state, &state->registers.h);
-			break;
-		case DEC_E:
-			cpu_dec8(state, &state->registers.e);
-			break;
-		case DEC_B:
-			cpu_dec8(state, &state->registers.b);
-			break;
-		
-		case DEC_C:
-			cpu_dec8(state, &state->registers.c);
-			break;
-		case DEC_D:
-			cpu_dec8(state, &state->registers.d);
-			break;
-		case DEC_L:
-			cpu_dec8(state, &state->registers.l);
-			break;
-		case DEC_A:
-			cpu_dec8(state, &state->registers.a);
 			break;
 
 		case RL_A:
@@ -70,27 +54,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case LD_REF_HL_n:
 			cpu_load_ref_reg_16_imm_8(state);
 			break;
-		case LD_REF_HL_B:
-			cpu_mov_ref_hl8(state, &state->registers.b);
-			break;
-		case LD_REF_HL_C:
-			cpu_mov_ref_hl8(state, &state->registers.c);
-			break;
-		case LD_REF_HL_D:
-			cpu_mov_ref_hl8(state, &state->registers.d);
-			break;
-		case LD_REF_HL_E:
-			cpu_mov_ref_hl8(state, &state->registers.d);
-			break;
-		case LD_REF_HL_H:
-			cpu_mov_ref_hl8(state, &state->registers.h);
-			break;
-		case LD_REF_HL_L:
-			cpu_mov_ref_hl8(state, &state->registers.l);
-			break;
-		case LD_REF_HL_A:
-			cpu_mov_ref_hl8(state, &state->registers.a);
-			break;
 
 		case LD_D_REF_HL:
 			cpu_ld8(state, &state->registers.d, mem_get(&state->mem, state->registers.hl));
@@ -107,7 +70,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case JP_NN:
-			cpu_jump_imm_16(state);
+			cpu_jump(state, mem_get16(&state->mem, state->registers.pc + 1));
 			break;
 
 		case LD_REF_nn_A:
@@ -129,9 +92,11 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case ENABLE_INTERRUPTS:
 			cpu_setinterrupts(state, 1);
+			cpu_inc_pc(state, 1);
 			break;
 		case DISABLE_INTERRUPTS:
 			cpu_setinterrupts(state, 0);
+			cpu_inc_pc(state, 1);
 			break;
 
 		case POP_BC:
