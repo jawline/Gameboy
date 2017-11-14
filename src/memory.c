@@ -93,7 +93,6 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 		}
 
 	} else if (off <= 0xFFFF) {
-		printf("TopRam Access %x\n", off);
 		return &mem->topram[off - END_UNUSED_IO];
 	}
 

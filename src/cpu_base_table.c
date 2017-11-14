@@ -2,12 +2,12 @@
 
 void cpu_jnz_imm_8(cpu_state* state) {
 	const unsigned INSTR_SIZE = 2;
-	DEBUG_OUT("Flags %x ZFLAG %x\n", state->registers.f, state->registers.f & ZERO_FLAG);
+	cpu_inc_pc(state, INSTR_SIZE);
+	
 	if (!cpu_is_flag(state, ZERO_FLAG)) {
-		DEBUG_OUT("JR NZ %i from %x\n", ((int8_t) mem_get(&state->mem, state->registers.pc + 1)), state->registers.pc);
-		state->registers.pc += ((int8_t) mem_get(&state->mem, state->registers.pc + 1)) + INSTR_SIZE;
-	} else {
-		cpu_inc_pc(state, INSTR_SIZE);
+		uint16_t dst = state->registers.pc + ((int8_t) mem_get(&state->mem, state->registers.pc + 1));
+		DEBUG_OUT("JR NZ %x to %x\n", state->registers.pc, dst);
+		cpu_jump(state, dst);
 	}
 }
 
@@ -29,6 +29,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_dec_reg16(state, &state->registers.hl);
 			cpu_inc_pc(state, 1);
 			break;
+
 		case JR_NZ_n:
 			cpu_jnz_imm_8(state);
 			break;
@@ -68,22 +69,13 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case LDI_REF_HL_A:
-			state->registers.a = mem_get(&state->mem, state->registers.hl);
+			mem_set(&state->mem, state->registers.hl, state->registers.a);
 			state->registers.hl++;
 			cpu_inc_pc(state, 1);
 			break;
 
 		case JP_NN:
 			cpu_jump(state, mem_get16(&state->mem, state->registers.pc + 1));
-			break;
-
-		case LD_REF_nn_A:
-			mem_set(&state->mem, mem_get16(&state->mem, state->registers.pc + 1), state->registers.a);
-			cpu_inc_pc(state, 3);
-			break;
-		case LD_REF_nn_SP:
-			mem_set16(&state->mem, mem_get16(&state->mem, state->registers.pc + 1), state->registers.sp);
-			cpu_inc_pc(state, 3);
 			break;
 
 		case CP_n:
@@ -134,6 +126,22 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_ret(state);
 			break;
 
+		//16 bit address loads
+		case LD_A_REF_nn:
+			state->registers.a = mem_get(&state->mem, mem_get16(&state->mem, state->registers.pc + 1));
+			cpu_inc_pc(state, 3);
+			break;
+
+		case LD_REF_nn_A:
+			mem_set(&state->mem, mem_get16(&state->mem, state->registers.pc + 1), state->registers.a);
+			cpu_inc_pc(state, 3);
+			break;
+
+		case LD_REF_nn_SP:
+			mem_set16(&state->mem, mem_get16(&state->mem, state->registers.pc + 1), state->registers.sp);
+			cpu_inc_pc(state, 3);
+			break;
+
 		case RET_NZ:
 
 			DEBUG_OUT("RET NZ\n");
@@ -142,14 +150,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 				cpu_ret(state);
 			} else {
 				cpu_inc_pc(state, 1);
-			}
-
-			break;
-
-		case EXT_OP:
-			
-			if (!ext_cpu_step(state)) {
-				return false;
 			}
 
 			break;

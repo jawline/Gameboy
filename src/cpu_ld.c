@@ -32,7 +32,6 @@ bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble) {
 }
 
 bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
-	printf("LD Instruction 0x%02X\n", c_instr);
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
@@ -80,9 +79,7 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 		return false;
 	}
 
-	printf("%x %x\n", c_instr_greater_nibble, c_instr_lesser_nibble);
-
-	uint8_t* dst = cpu_reg_cela(state, c_instr_greater_nibble - 4);
+	uint8_t* dst = cpu_reg_cela(state, c_instr_greater_nibble - 0x4);
 	uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble - 0x8);
 	cpu_ld8(state, dst, *src);
 

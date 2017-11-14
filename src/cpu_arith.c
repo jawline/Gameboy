@@ -32,7 +32,7 @@ void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 }
 
 void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	*reg = *reg && v;
+	*reg = (*reg && v) ? 1 : 0;
 	cpu_set_flags(state, *reg == 0, 0, 1, 0);
 }
 
@@ -41,13 +41,19 @@ void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	cpu_set_flags(state, *reg == 0, 0, 0, 0);
 }
 
-void cpu_dec_reg16(cpu_state* state, uint16_t* reg) {
-	printf("Dec %x\n", *reg);
-	*reg = *reg - 1;
+void cpu_xor_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	*reg = *reg ^ v;
+	cpu_set_flags(state, *reg == 0, 0, 0, 0);
 }
 
 void cpu_inc_reg16(cpu_state* state, uint16_t* reg) {
 	*reg = *reg + 1;
+	//No flags affected
+}
+
+void cpu_dec_reg16(cpu_state* state, uint16_t* reg) {
+	*reg = *reg - 1;
+	//No flags affected
 }
 
 bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
@@ -134,6 +140,12 @@ void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
 	}
 
 	cpu_set_flags(state, *reg == 0, 0, 0, next_carry);
+}
+
+void cpu_grid_xor8(cpu_state* state, uint8_t lnibble) {
+	uint8_t* reg = cpu_reg_bcdehla(state, lnibble - 0x8);
+	cpu_xor_reg8(state, &state->registers.a, *reg);
+	cpu_inc_pc(state, 1);
 }
 
 bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {

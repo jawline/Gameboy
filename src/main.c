@@ -4,7 +4,7 @@
 #include "types.h"
 #include "view/view.h"
 
-//#define VIEW_ENABLED
+#define VIEW_ENABLED
 
 int main(int argc, char const* const* argv) {
 	cpu_state s;
@@ -34,8 +34,9 @@ int main(int argc, char const* const* argv) {
 	unsigned long total_count = 0;
 
 	while (cpu_step(&s)) {
+		//fgetc(stdin);
 #ifdef VIEW_ENABLED
-		if (ticks % 30 == 0 && !view_render(&view, &s)) {
+		if (ticks % 200 == 0 && !view_render(&view, &s)) {
 			break;
 		}
 		ticks++;
@@ -44,7 +45,10 @@ int main(int argc, char const* const* argv) {
 	}
 
 #ifdef VIEW_ENABLED
-	view_render(&view, &s);
+	while (true) {
+		view_render(&view, &s);
+		usleep(100);
+	}
 #endif
 
 	return 0;

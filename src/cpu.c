@@ -20,12 +20,6 @@ void cpu_xor_reg(cpu_state* state, uint8_t* reg, uint8_t v) {
 	cpu_inc_pc(state, 1);
 }
 
-void cpu_add_reg_to_a(cpu_state* state, uint8_t reg) {
-	state->registers.a += reg;
-	cpu_set_flags(state, state->registers.a == 0, 0, 0, 0); //TODO: Carry flags
-	cpu_inc_pc(state, 1);
-}
-
 bool cpu_step(cpu_state* state) {
 	
 	uint16_t start_pc = state->registers.pc;
@@ -36,7 +30,9 @@ bool cpu_step(cpu_state* state) {
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
  
-	if (c_instr >= 0x40 && c_instr < 0x80 && c_instr != HALT) {
+	if (c_instr == EXT_OP) {
+		return ext_cpu_step(state);
+	} if (c_instr >= 0x40 && c_instr < 0x80 && c_instr != HALT) {
 		if (!cpu_ld_table_large(state, c_instr)) {
 			return false;
 		}
@@ -60,6 +56,8 @@ bool cpu_step(cpu_state* state) {
 		cpu_grid_dec_16(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x3) {
 		cpu_grid_inc_16(state, c_instr_greater_nibble);
+	} else if (c_instr_greater_nibble == 0xA && c_instr_lesser_nibble >= 0x8) {
+		cpu_grid_xor8(state, c_instr_lesser_nibble);
 	} else if (c_instr_greater_nibble >= 0x8 && c_instr_greater_nibble <= 0xB && c_instr_lesser_nibble < 8) {
 		if (!cpu_grid_arith_0x80xB_0x00x7(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;
@@ -70,7 +68,7 @@ bool cpu_step(cpu_state* state) {
 		}
 	}
 
-	printf("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X SIZE=%i BC=0x%04X AF=0x%04X DE=0x%04X HL=0x%04X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, state->registers.pc - start_pc, state->registers.bc, state->registers.af, state->registers.de, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG));
+	DEBUG_OUT("Done INSTR=0x%02X (%i) SPC=0x%02X PC=0x%02X SIZE=%i BC=0x%04X AF=0x%04X DE=0x%04X HL=0x%04X FLAGS=%01i%01i%01i%01i\n", c_instr, c_instr, start_pc, state->registers.pc, state->registers.pc - start_pc, state->registers.bc, state->registers.af, state->registers.de, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG));
 
 	return true;
 }

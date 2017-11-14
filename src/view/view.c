@@ -7,7 +7,7 @@ uint8_t view_init(view_t* view) {
 		return 0;
 	}
 
-	view->window = SDL_CreateWindow("View", 100, 100, 160, 144, SDL_WINDOW_SHOWN);
+	view->window = SDL_CreateWindow("View", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
 
 	if (!view->window) {
 		printf("%s\n", SDL_GetError());
@@ -61,8 +61,15 @@ uint8_t view_render(view_t* view, cpu_state* s) {
 	
 	//Update the screen
 	SDL_RenderPresent(view->renderer);
-	
-	//SDL_Delay(50);
+	SDL_UpdateWindowSurface(view->window);
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+        	printf("Quit Event\n");
+    		exit(1);
+    	}
+    }
 
 	return 1;
 }

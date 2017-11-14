@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #ifdef DEBUG 
 #define DEBUG_OUT(...) printf(__VA_ARGS__)
@@ -18,8 +18,6 @@ typedef enum {
 	RLC_A = 0x6,
 
 	HALT = 0x76,
-
-	LD_adr_bc_nn = 0x2,
 
 	LD_A_REF_BC = 0x0A,
 	LD_A_REF_DE = 0x1A,
@@ -48,7 +46,6 @@ typedef enum {
 
 	EXT_OP = 0xCB,
 
-	LD_REF_nn_A = 0xEA,
 	LD_REF_nn_SP = 0x08,
 	
 	LDI_REF_HL_A = 0x22,
@@ -57,6 +54,9 @@ typedef enum {
 
 	CPL_A = 0x2F,
 	CP_n = 0xFE,
+
+	LD_REF_nn_A = 0xEA,
+	LD_A_REF_nn = 0xFA,
 	
 	DISABLE_INTERRUPTS = 0xF3,
 	ENABLE_INTERRUPTS = 0xFB,
@@ -143,6 +143,8 @@ bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lni
 
 void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble);
 void cpu_grid_inc_16(cpu_state* state, uint8_t gnibble);
+
+void cpu_grid_xor8(cpu_state* state, uint8_t lnibble);
 
 void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
 void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
