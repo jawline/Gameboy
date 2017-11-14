@@ -3,7 +3,7 @@
 
 typedef enum {
 	NOOP = 0,
-	RLC_A = 0x6,
+	RLC_A = 0x7,
 
 	HALT = 0x76,
 
