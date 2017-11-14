@@ -127,6 +127,7 @@ void cpu_rl_reg8(cpu_state* state, uint8_t* reg) {
 	}
 
 	cpu_set_flags(state, *reg == 0, 0, 0, next_carry);
+	cpu_instr_m(state, 2);
 }
 
 void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
@@ -143,6 +144,7 @@ void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
 	}
 
 	cpu_set_flags(state, *reg == 0, 0, 0, next_carry);
+	cpu_instr_m(state, 2);
 }
 
 void cpu_grid_xor8(cpu_state* state, uint8_t lnibble) {

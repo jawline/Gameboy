@@ -2,7 +2,7 @@
 #include "romloader.h"
 #include <stdint.h>
 
-char emu_init(cpu_state* state, char const* bios, char const* rom) {
+char emu_init(cpu_state* state, gpu_state* gstate, char const* bios, char const* rom) {
 	uint8_t* romdat = rom_load(bios, rom);
 
 	if (!romdat) {
@@ -10,6 +10,7 @@ char emu_init(cpu_state* state, char const* bios, char const* rom) {
 	}
 	
 	cpu_init(state);
+	gpu_init(gstate);
 	memory_init(&state->mem, romdat);
 
 	return 1;

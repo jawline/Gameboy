@@ -74,6 +74,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			//Increment PC
 			mem_set(&state->mem, state->registers.hl, state->registers.a);
 			state->registers.hl++;
+			cpu_instr_m(state, 2);
 			break;
 
 		case JP_NN:
@@ -81,7 +82,8 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case CP_n:
-			cpu_set_flags(state, (state->registers.a - cpu_instr_nb(state)) == 0, 1, 0, 0); //TODO: Carry flags
+			cpu_set_flags(state, (state->registers.a - cpu_instr_nb(state)) == 0, 1, 0, 0); //TODO: Carry flags#
+			cpu_instr_m(state, 2);
 			break;
 
 		case CPL_A:
@@ -126,6 +128,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case RET:
 			cpu_ret(state);
+			cpu_instr_m(state, 2);
 			break;
 
 		//16 bit address loads

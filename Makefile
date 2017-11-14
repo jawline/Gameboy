@@ -30,7 +30,7 @@ remove:
 clean:
 	-@rm -r $(OBJ_DIR) $(EXECUTABLE)
 
-test: all
+test: clean all
 	$(EXECUTABLE) ~/bios.gb ~/test.gb
 
 #The executable rule compiles the set of objects into the target executable
