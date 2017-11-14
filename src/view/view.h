@@ -12,11 +12,10 @@ typedef struct emulator_view {
 	unsigned width;
 	unsigned height;
 
-	unsigned wscale;
-	unsigned hscale;
+	SDL_Texture* texture;
 } view_t;
 
 uint8_t view_init(view_t* view);
-uint8_t view_render(view_t* view, cpu_state* s);
+uint8_t view_render(view_t* view, cpu_state* s, gpu_state* gs);
 
 #endif

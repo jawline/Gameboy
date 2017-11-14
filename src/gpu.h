@@ -2,6 +2,10 @@
 #define _GPU_DEF_H_
 #include "cpu.h"
 
+#define INTERNAL_WIDTH 640
+#define INTERNAL_HEIGHT 480
+#define BYTES_PER_PIXEL 4
+
 typedef enum {
 	HBLANK,
 	VBLANK,
@@ -19,6 +23,7 @@ typedef struct {
 	GPU_MODE mode;
 	unsigned int cycles_in_mode;
 	unsigned int line;
+	uint8_t* canvas; //RGB canvas data
 } gpu_state;
 
 void gpu_init(gpu_state* state);
