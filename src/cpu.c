@@ -38,6 +38,8 @@ bool cpu_step(cpu_state* state) {
 		if (!cpu_grid_0x00x3_0x40x5(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;
 		}
+	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x6) {
+		cpu_ld_list_0x6(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0xC || c_instr_lesser_nibble == 0xD)) {
 		if (!cpu_grid_0x00x3_0xC0xD(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
 			return false;

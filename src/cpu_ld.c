@@ -28,6 +28,11 @@ bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble) {
 	return true;
 }
 
+bool cpu_ld_list_0x6(cpu_state* state, uint8_t gnibble) {
+	uint8_t* reg = cpu_reg_8_bdh(state, gnibble);
+	cpu_ld8_n(state, reg);
+}
+
 bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
