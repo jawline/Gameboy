@@ -33,7 +33,6 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 		//It's an 8 bit reg instr
 		uint8_t* reg = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 		ext_cpu_step_bit_test_8bit_reg(state, reg, selected_bit);
-		cpu_inc_pc(state, 1);
 		return true;
 	}
 }
@@ -41,16 +40,13 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 void ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
 	uint8_t* reg = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
-
-	cpu_inc_pc(state, 1);
 	cpu_rl_reg8(state, reg);
 }
 
 bool ext_cpu_step(cpu_state* state) {
-	cpu_inc_pc(state, 1);
 
 	DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
-	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
+	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
 	DEBUG_OUT("EXTInstr %x\n", c_instr);
 
 	if (c_instr >= 0x40 && c_instr < 0x80) {

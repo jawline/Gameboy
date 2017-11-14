@@ -74,3 +74,13 @@ uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off) {
 	DEBUG_OUT("Should be unreachable hit CELA\n");
 	return 0;
 }
+
+uint8_t cpu_instr_nb(cpu_state* state) {
+	return mem_get(&state->mem, state->registers.pc++);
+}
+
+uint16_t cpu_instr_nw(cpu_state* state) {
+	uint16_t t = mem_get16(&state->mem, state->registers.pc);
+	state->registers.pc += 2;
+	return t;
+}

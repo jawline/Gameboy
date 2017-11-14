@@ -1,6 +1,7 @@
 #ifndef _CPU_DEF_H_
 #define _CPU_DEF_H_
 #include "memory.h"
+#include "cpu_ops.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -13,59 +14,14 @@
 #define DEBUG_OUT(...)
 #endif
 
-typedef enum {
-	NOOP = 0,
-	RLC_A = 0x6,
-
-	HALT = 0x76,
-
-	LD_A_REF_BC = 0x0A,
-	LD_A_REF_DE = 0x1A,
-
-	LD_D_REF_HL = 0x56,
-
-	LDH_REF_n_A = 0xE0,
-	LDH_REF_C_A = 0xE2,
-	LDH_REF_A_n = 0xF0,
-
-	LDD_REF_HL_A = 0x32,
-
-	POP_BC = 0xC1,
-	PUSH_BC = 0xC5,
-
-	RL_A = 0x17,
-
-	CALL_nn = 0xCD,
-	CALL_Z_nn = 0xCC,
-
-	RET = 0xC9,
-	RET_NZ = 0xC0,
-
-	EXT_OP = 0xCB,
-
-	LD_REF_nn_SP = 0x08,
-	
-	LDI_REF_HL_A = 0x22,
-	JP_NN = 0xC3,
-	JR_NZ_n = 0x20,
-
-	CPL_A = 0x2F,
-	CP_n = 0xFE,
-
-	LD_REF_nn_A = 0xEA,
-	LD_A_REF_nn = 0xFA,
-	
-	DISABLE_INTERRUPTS = 0xF3,
-	ENABLE_INTERRUPTS = 0xFB,
-	RST_38 = 0xFF
-} cpu_ops;
-
-typedef enum {
-	TEST_7_H = 0x7C,
-} cpu_ops_ext;
+typedef struct cpu_clock {
+	uint32_t m;
+	uint32_t t;
+} cpu_clock;
 
 typedef struct cpu_registers {
 	uint16_t pc, sp;
+	cpu_clock lc;
 	
 	union {
 		struct { uint8_t b; uint8_t c; };
@@ -87,11 +43,6 @@ typedef struct cpu_registers {
 		uint16_t hl;		
 	};
 } cpu_registers;
-
-typedef struct cpu_clock {
-	uint32_t m;
-	uint32_t t;
-} cpu_clock;
 
 typedef struct cpu_state {
 	char interrupts;
@@ -169,6 +120,10 @@ uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off);
 uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off);
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble);
 uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off);
+
+//Get next byte or word from memory pointed by PC then inc PC
+uint8_t cpu_instr_nb(cpu_state* state);
+uint16_t cpu_instr_nw(cpu_state* state);
 
 /**
  * Flag Methods

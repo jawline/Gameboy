@@ -1,27 +1,22 @@
 #include "cpu.h"
 
 void cpu_ld8_n(cpu_state* state, uint8_t* reg) {
-	uint8_t lval = mem_get(&state->mem, state->registers.pc + 1);
+	uint8_t lval = cpu_instr_nb(state);
 	*reg = lval;
-	cpu_inc_pc(state, 2);
 }
 
 void cpu_ld16_nn(cpu_state* state, uint16_t* reg) {
-	*reg = mem_get16(&state->mem, state->registers.pc + 1);
+	*reg = cpu_instr_nw(state);
 }
 
 void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val) {
 	*to = val;
-	cpu_inc_pc(state, 1);
 }
 
 bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble) {
 	DEBUG_OUT("CPU LD 16 IMM\n");
-
 	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
-
 	cpu_ld16_nn(state, reg);
-	cpu_inc_pc(state, 3);
 	return true;
 }
 
@@ -57,7 +52,6 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 
 		if (c_instr_lesser_nibble == 0x6) {
 			*dst = mem_get(&state->mem, state->registers.hl);
-			cpu_inc_pc(state, 1);
 		} else {
 			uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 			cpu_ld8(state, dst, *src);
@@ -70,7 +64,6 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 	if (c_instr_greater_nibble == 0x7 && c_instr_lesser_nibble < 0x8) {
 		uint8_t v = *cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 		mem_set(&state->mem, state->registers.hl, v);
-		cpu_inc_pc(state, 1);
 		return true;
 	}
 

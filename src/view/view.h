@@ -4,9 +4,16 @@
 #include <SDL2/SDL.h>
 
 typedef struct emulator_view {
-	unsigned setup:1;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
+
+	unsigned setup:1;
+
+	unsigned width;
+	unsigned height;
+
+	unsigned wscale;
+	unsigned hscale;
 } view_t;
 
 uint8_t view_init(view_t* view);

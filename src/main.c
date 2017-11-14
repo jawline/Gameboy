@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "gpu.h"
 #include "emulator.h"
 #include <stdio.h>
 #include "types.h"
@@ -34,6 +35,7 @@ int main(int argc, char const* const* argv) {
 	unsigned long total_count = 0;
 
 	while (cpu_step(&s)) {
+		gpu_step(&s);
 		//fgetc(stdin);
 #ifdef VIEW_ENABLED
 		if (ticks % 200 == 0 && !view_render(&view, &s)) {
@@ -42,10 +44,6 @@ int main(int argc, char const* const* argv) {
 		ticks++;
 #endif
 		total_count++;
-
-		if (total_count > 100) {
-			break;
-		}
 	}
 
 #ifdef VIEW_ENABLED

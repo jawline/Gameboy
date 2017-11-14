@@ -8,23 +8,11 @@ void cpu_init(cpu_state* state) {
 	state->registers.f = 0;
 }
 
-void cpu_mov_ref_hl8(cpu_state* state, uint8_t* reg) {
-	mem_set(&state->mem, state->registers.hl, *reg);
-	cpu_inc_pc(state, 1);
-}
-
-void cpu_xor_reg(cpu_state* state, uint8_t* reg, uint8_t v) {
-	DEBUG_OUT("XOR %x\n", *reg);
-	*reg = *reg ^ v;
-	cpu_set_flags(state, *reg == 0, 0, 0, 0);
-	cpu_inc_pc(state, 1);
-}
-
 bool cpu_step(cpu_state* state) {
 	
 	uint16_t start_pc = state->registers.pc;
+	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
 	DEBUG_OUT("Step PC=0x%02X\n", state->registers.pc);
-	uint8_t c_instr = mem_get(&state->mem, state->registers.pc);
 	DEBUG_OUT("Instr 0x%02X PC(idx):%i mem_get:%02X (%i)\n", c_instr, state->registers.pc, mem_get(&state->mem, state->registers.pc), mem_get(&state->mem, state->registers.pc));
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;

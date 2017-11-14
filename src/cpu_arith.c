@@ -73,8 +73,6 @@ bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 				cpu_dec_reg8(state, reg);
 				break;
 		}
-
-		cpu_inc_pc(state, 1);
 	}
 
 	return true;
@@ -93,20 +91,16 @@ bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 			break;
 	}
 
-	cpu_inc_pc(state, 1);
-
 	return true;
 }
 
 void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {
 	cpu_dec_reg16(state, cpu_reg_16_bdhs(state, gnibble));
-	cpu_inc_pc(state, 1);
 }
 
 void cpu_grid_inc_16(cpu_state* state, uint8_t gnibble) {
 	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
 	cpu_inc_reg16(state, reg);
-	cpu_inc_pc(state, 1);
 }
 
 void cpu_rl_reg8(cpu_state* state, uint8_t* reg) {
@@ -145,14 +139,10 @@ void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
 void cpu_grid_xor8(cpu_state* state, uint8_t lnibble) {
 	uint8_t* reg = cpu_reg_bcdehla(state, lnibble - 0x8);
 	cpu_xor_reg8(state, &state->registers.a, *reg);
-	cpu_inc_pc(state, 1);
 }
 
 bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
-/*			case LD_L_REF_HL:
-			state->registers.l = mem_get(&state->mem, state->registers.hl);
-			cpu_inc_pc(state, 1);
-			break; */
+
 	if (lnibble == 0x6) {
 		printf("GRID HL METHODS NOT IMPL YET\n");
 		return false;
@@ -174,7 +164,6 @@ bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lni
 			cpu_or_reg8(state, &state->registers.a, *reg);
 			break;
 	}
-
-	cpu_inc_pc(state, 1);
+	
 	return true;
 }

@@ -1,5 +1,8 @@
 #include "view.h"
 
+const unsigned INTERNAL_WIDTH = 160;
+const unsigned INTERNAL_HEIGHT = 144;
+
 uint8_t view_init(view_t* view) {
 
 	if (SDL_Init(SDL_INIT_VIDEO) != 0){
@@ -7,7 +10,13 @@ uint8_t view_init(view_t* view) {
 		return 0;
 	}
 
-	view->window = SDL_CreateWindow("View", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+	view->width = 640;
+	view->height = 480;
+
+	view->wscale = view->width / INTERNAL_WIDTH;
+	view->hscale = view->height / INTERNAL_HEIGHT;
+
+	view->window = SDL_CreateWindow("Gameboy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, view->width, view->height, SDL_WINDOW_SHOWN);
 
 	if (!view->window) {
 		printf("%s\n", SDL_GetError());
@@ -23,6 +32,14 @@ uint8_t view_init(view_t* view) {
 		SDL_Quit();
 		return 0;
 	}
+
+	if (SDL_RenderSetScale(view->renderer, view->wscale, view->hscale)) {
+		printf("%s\n", SDL_GetError());
+		SDL_DestroyWindow(view->window);
+		SDL_Quit();
+		return 0;	
+	}
+
 
 	return 1;
 }
