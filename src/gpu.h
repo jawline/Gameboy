@@ -2,8 +2,8 @@
 #define _GPU_DEF_H_
 #include "cpu.h"
 
-#define INTERNAL_WIDTH 640
-#define INTERNAL_HEIGHT 480
+#define INTERNAL_WIDTH 512
+#define INTERNAL_HEIGHT 512
 #define BYTES_PER_PIXEL 4
 
 typedef enum {
