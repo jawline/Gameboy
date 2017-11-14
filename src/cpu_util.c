@@ -1,9 +1,5 @@
 #include "cpu.h"
 
-void cpu_inc_pc(cpu_state* state, uint16_t off) {
-	state->registers.pc += off;
-}
-
 uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off) {
 
 	switch (off) {
@@ -83,4 +79,9 @@ uint16_t cpu_instr_nw(cpu_state* state) {
 	uint16_t t = mem_get16(&state->mem, state->registers.pc);
 	state->registers.pc += 2;
 	return t;
+}
+
+void cpu_instr_m(cpu_state* state, uint8_t m) {
+	state->registers.lc.m = m;
+	state->registers.lc.t = m * 4;
 }

@@ -1,19 +1,10 @@
 #include "cpu.h"
 
-void cpu_jr_flag(cpu_state* state, unsigned flag) {
-	int8_t rloc = cpu_instr_nb(state);
-	
-	if (flag) {
-		uint16_t dst = state->registers.pc + rloc;
-		DEBUG_OUT("JR NZ %x to %x\n", state->registers.pc, dst);
-		cpu_jump(state, dst);
-	}
-}
-
 bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 	switch (c_instr) {
 
 		case NOOP:
+			cpu_instr_m(state, 1);
 			break;
 		
 		case RLC_A:
@@ -34,12 +25,15 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		 */
 		case JR_n:
 			cpu_jr_flag(state, 1);
+			cpu_instr_m(state, 1);
 			break;
 		case JR_Z_n:
 			cpu_jr_flag(state, cpu_is_flag(state, ZERO_FLAG));
+			cpu_instr_m(state, 2);
 			break;
 		case JR_NZ_n:
 			cpu_jr_flag(state, !cpu_is_flag(state, ZERO_FLAG));
+			cpu_instr_m(state, 2);
 			break;
 		/**
 		 * End of relative jumps
@@ -47,22 +41,27 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case LDH_REF_C_A:
 			mem_set(&state->mem, 0xFF00 + state->registers.c, state->registers.a);
+			cpu_instr_m(state, 2);
 			break;
 
 		case LDH_REF_n_A:
 			mem_set(&state->mem, 0xFF00 + cpu_instr_nb(state), state->registers.a);
+			cpu_instr_m(state, 4);
 			break;
 
 		case LDH_REF_A_n:
 			state->registers.a = mem_get(&state->mem, 0xFF00 + cpu_instr_nb(state));
+			cpu_instr_m(state, 4);
 			break;
 
 		case LD_A_REF_BC:
 			state->registers.a = mem_get(&state->mem, state->registers.bc);
+			cpu_instr_m(state, 2);
 			break;
 
 		case LD_A_REF_DE:
 			state->registers.a = mem_get(&state->mem, state->registers.de);
+			cpu_instr_m(state, 2);
 			break;
 
 		case LD_D_REF_HL:
@@ -100,15 +99,18 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case POP_BC:
 			state->registers.bc = stack_pop16(state);
+			cpu_instr_m(state, 3);
 			break;
 
 		case PUSH_BC:
 			stack_push16(state, state->registers.bc);
+			cpu_instr_m(state, 4);
 			break;
 		
 		case CALL_nn: {
 			uint16_t call_loc = cpu_instr_nw(state);
 			cpu_call(state, call_loc, state->registers.pc);
+			cpu_instr_m(state, 3);
 			break;
 		}
 

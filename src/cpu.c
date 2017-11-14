@@ -4,15 +4,17 @@
 const uint16_t START_PC = 0x0;
 
 void cpu_init(cpu_state* state) {
+	memset(&state->registers, 0, sizeof(state->registers));
 	state->registers.pc = START_PC;
 	state->registers.f = 0;
 }
 
 bool cpu_step(cpu_state* state) {
+
+	memset(&state->registers.lc, 0, sizeof(state->registers.lc));
 	
 	uint16_t start_pc = state->registers.pc;
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
-	DEBUG_OUT("Step PC=0x%02X\n", state->registers.pc);
 	DEBUG_OUT("Instr 0x%02X PC(idx):%i mem_get:%02X (%i)\n", c_instr, state->registers.pc, mem_get(&state->mem, state->registers.pc), mem_get(&state->mem, state->registers.pc));
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
@@ -56,7 +58,15 @@ bool cpu_step(cpu_state* state) {
 		}
 	}
 
-	DEBUG_OUT("SPC=0x%02X INSTR=0x%02X (%i) PC=0x%02X SIZE=%i BC=0x%04X AF=0x%04X DE=0x%04X HL=0x%04X FLAGS=%01i%01i%01i%01i\n", start_pc, c_instr, c_instr, state->registers.pc, state->registers.pc - start_pc, state->registers.bc, state->registers.af, state->registers.de, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG));
+	if (!state->registers.lc.m) {
+		printf("BAD INSTR CLK\n");
+		exit(1);
+	}
+
+	state->clock.m += state->registers.lc.m;
+	state->clock.t += state->registers.lc.t;
+
+	DEBUG_OUT("SPC=0x%02X INSTR=0x%02X (%i) PC=0x%02X SIZE=%i BC=0x%04X AF=0x%04X DE=0x%04X HL=0x%04X FLAGS=%01i%01i%01i%01i CLOCK=%i\n", start_pc, c_instr, c_instr, state->registers.pc, state->registers.pc - start_pc, state->registers.bc, state->registers.af, state->registers.de, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG), state->clock.t);
 
 	return true;
 }

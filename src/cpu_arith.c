@@ -4,11 +4,13 @@ void cpu_inc_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg + 1;
 	uint8_t third_bit_carried = (*reg & 1) && (*reg & 2) && (*reg & 4);
 	cpu_set_flags(state, *reg == 0, 0, third_bit_carried, cpu_is_flag(state, CARRY_FLAG));
+	cpu_instr_m(state, 1);
 }
 
 void cpu_dec_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg - 1;
 	cpu_set_flags(state, *reg == 0, 1, 0, cpu_is_flag(state, CARRY_FLAG)); //TODO: Carry flags
+	cpu_instr_m(state, 1);
 }
 
 bool bit_7_carry(uint8_t v1, uint8_t v2) {
@@ -24,35 +26,42 @@ void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	uint8_t bit_7 = bit_7_carry(*reg, v);
 	*reg = *reg + v;
 	cpu_set_flags(state, *reg == 0, 0, bit_3, bit_7);
+	cpu_instr_m(state, 1);
 }
 
 void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	*reg = *reg - v;
 	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
+	cpu_instr_m(state, 1);
 }
 
 void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	*reg = (*reg && v) ? 1 : 0;
 	cpu_set_flags(state, *reg == 0, 0, 1, 0);
+	cpu_instr_m(state, 1);
 }
 
 void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	*reg = *reg || v;
 	cpu_set_flags(state, *reg == 0, 0, 0, 0);
+	cpu_instr_m(state, 1);
 }
 
 void cpu_xor_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	*reg = *reg ^ v;
 	cpu_set_flags(state, *reg == 0, 0, 0, 0);
+	cpu_instr_m(state, 1);
 }
 
 void cpu_inc_reg16(cpu_state* state, uint16_t* reg) {
 	*reg = *reg + 1;
+	cpu_instr_m(state, 2);
 	//No flags affected
 }
 
 void cpu_dec_reg16(cpu_state* state, uint16_t* reg) {
 	*reg = *reg - 1;
+	cpu_instr_m(state, 2);
 	//No flags affected
 }
 

@@ -1,16 +1,18 @@
 #include "cpu.h"
 
+void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val) {
+	*to = val;
+	cpu_instr_m(state, 2);
+}
+
 void cpu_ld8_n(cpu_state* state, uint8_t* reg) {
 	uint8_t lval = cpu_instr_nb(state);
-	*reg = lval;
+	cpu_ld8(state, reg, lval);
 }
 
 void cpu_ld16_nn(cpu_state* state, uint16_t* reg) {
 	*reg = cpu_instr_nw(state);
-}
-
-void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val) {
-	*to = val;
+	cpu_instr_m(state, 4);
 }
 
 bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble) {
@@ -64,6 +66,7 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 	if (c_instr_greater_nibble == 0x7 && c_instr_lesser_nibble < 0x8) {
 		uint8_t v = *cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 		mem_set(&state->mem, state->registers.hl, v);
+		cpu_instr_m(state, 2);
 		return true;
 	}
 

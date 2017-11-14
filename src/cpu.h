@@ -79,7 +79,6 @@ void cpu_setinterrupts(cpu_state* state, uint8_t on);
  */
 
 void cpu_call(cpu_state* state, uint16_t address, uint16_t next_instr);
-void cpu_call_nn(cpu_state* state);
 void cpu_ret(cpu_state* state);
 
 /**
@@ -120,6 +119,7 @@ uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off);
 uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off);
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble);
 uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off);
+void cpu_instr_m(cpu_state* state, uint8_t m);
 
 //Get next byte or word from memory pointed by PC then inc PC
 uint8_t cpu_instr_nb(cpu_state* state);
@@ -148,6 +148,7 @@ bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble);
  */
 
 void cpu_jump(cpu_state* state, uint16_t address);
+void cpu_jr_flag(cpu_state* state, unsigned flag);
 
 /**
  * Base Table
