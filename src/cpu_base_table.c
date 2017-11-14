@@ -1,8 +1,7 @@
 #include "cpu.h"
 
 void cpu_jnz_imm_8(cpu_state* state) {
-	const unsigned INSTR_SIZE = 2;
-	cpu_inc_pc(state, INSTR_SIZE);
+	cpu_inc_pc(state, 2);
 	
 	if (!cpu_is_flag(state, ZERO_FLAG)) {
 		uint16_t dst = state->registers.pc + ((int8_t) mem_get(&state->mem, state->registers.pc + 1));
@@ -13,17 +12,21 @@ void cpu_jnz_imm_8(cpu_state* state) {
 
 bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 	switch (c_instr) {
+
 		case NOOP:
 			cpu_inc_pc(state, 1);
 			break;
+		
 		case RLC_A:
 			cpu_rlc_reg8(state, &state->registers.a);
 			cpu_inc_pc(state, 1);
 			break;
+		
 		case RL_A:
 			cpu_rl_reg8(state, &state->registers.a);
 			cpu_inc_pc(state, 1);
 			break;
+
 		case LDD_REF_HL_A:
 			mem_set(&state->mem, state->registers.hl, state->registers.a);
 			cpu_dec_reg16(state, &state->registers.hl);
@@ -58,17 +61,15 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			state->registers.a = mem_get(&state->mem, state->registers.de);
 			cpu_inc_pc(state, 1);
 			break;
-		
-		case LD_REF_HL_n:
-			mem_set(&state->mem, state->registers.hl, mem_get(&state->mem, state->registers.pc + 1));
-			cpu_inc_pc(state, 2);
-			break;
 
 		case LD_D_REF_HL:
 			cpu_ld8(state, &state->registers.d, mem_get(&state->mem, state->registers.hl));
 			break;
 
 		case LDI_REF_HL_A:
+			//Set (HL) to a
+			//Increment HL
+			//Increment PC
 			mem_set(&state->mem, state->registers.hl, state->registers.a);
 			state->registers.hl++;
 			cpu_inc_pc(state, 1);

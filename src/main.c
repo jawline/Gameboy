@@ -42,6 +42,10 @@ int main(int argc, char const* const* argv) {
 		ticks++;
 #endif
 		total_count++;
+
+		if (total_count > 100) {
+			break;
+		}
 	}
 
 #ifdef VIEW_ENABLED
