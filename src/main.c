@@ -31,15 +31,13 @@ int main(int argc, char const* const* argv) {
 	}
 #endif
 
-	/*unsigned long total_count = 0;
-
 	while (cpu_step(&s)) {
 		DRAW_MODE redraw = gpu_step(&s, &gs);
 		//fgetc(stdin);
 		#ifdef VIEW_ENABLED
 			if (redraw == REDRAW_ALL) view_render(&view, &s, &gs);
 		#endif
-	}*/
+	}
 
 #ifdef VIEW_ENABLED
 	while (true) {

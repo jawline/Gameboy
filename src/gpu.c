@@ -14,11 +14,8 @@ void gpu_enter_mode(gpu_state* state, GPU_MODE mode) {
 
 void gpu_render_line(cpu_state* state, gpu_state* gstate) {
 	unsigned int line_size = INTERNAL_WIDTH * BYTES_PER_PIXEL;
-	unsigned int line_offset = line_size * gstate->line;
-
-	
-	gstate->canvas[line_offset] = rand();
-
+	unsigned int line_offset = line_size * (gstate->line - 1);
+	for (unsigned i = 0; i < 160; i++) gstate->canvas[line_offset + (i * BYTES_PER_PIXEL)] = 255;
 }
 
 DRAW_MODE gpu_step(cpu_state* state, gpu_state* gstate) {
@@ -40,7 +37,7 @@ DRAW_MODE gpu_step(cpu_state* state, gpu_state* gstate) {
 		case HBLANK:
 			if (gstate->cycles_in_mode >= 204) {
 				gstate->line++;
-				if (gstate->line == 143) {
+				if (gstate->line == 145) {
 					gpu_enter_mode(gstate, VBLANK);
 				} else {
 					gpu_enter_mode(gstate, OAM);

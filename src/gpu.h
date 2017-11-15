@@ -2,9 +2,9 @@
 #define _GPU_DEF_H_
 #include "cpu.h"
 
-#define INTERNAL_WIDTH 512
-#define INTERNAL_HEIGHT 512
-#define BYTES_PER_PIXEL 4
+#define INTERNAL_WIDTH 160
+#define INTERNAL_HEIGHT 144
+#define BYTES_PER_PIXEL 3
 
 typedef enum {
 	HBLANK,

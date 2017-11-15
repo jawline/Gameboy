@@ -79,6 +79,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case JP_NN:
 			cpu_jump(state, cpu_instr_nw(state));
+			cpu_instr_m(state, 3);
 			break;
 
 		case CP_n:
@@ -93,10 +94,12 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case ENABLE_INTERRUPTS:
 			cpu_setinterrupts(state, 1);
+			cpu_instr_m(state, 1);
 			break;
 
 		case DISABLE_INTERRUPTS:
 			cpu_setinterrupts(state, 0);
+			cpu_instr_m(state, 1);
 			break;
 
 		case POP_BC:
@@ -138,6 +141,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case LD_REF_nn_A:
 			mem_set(&state->mem, cpu_instr_nw(state), state->registers.a);
+			cpu_instr_m(state, 4);
 			break;
 
 		case LD_REF_nn_SP:
