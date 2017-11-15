@@ -1,7 +1,7 @@
 #include "cpu.h"
 #include <stdio.h>
 
-const uint16_t START_PC = 0x100;
+const uint16_t START_PC = 0x0;
 
 void cpu_init(cpu_state* state) {
 	memset(&state->registers, 0, sizeof(state->registers));

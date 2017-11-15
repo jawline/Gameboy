@@ -35,7 +35,9 @@ int main(int argc, char const* const* argv) {
 		DRAW_MODE redraw = gpu_step(&s, &gs);
 		//fgetc(stdin);
 		#ifdef VIEW_ENABLED
-			if (redraw == REDRAW_ALL) view_render(&view, &s, &gs);
+			if (redraw == REDRAW_ALL) {
+				view_render(&view, &s, &gs);
+			}
 		#endif
 	}
 
