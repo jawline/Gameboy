@@ -43,7 +43,7 @@ void gpu_render_line(cpu_state* state, gpu_state* gstate) {
 	
 	for (unsigned i = 0; i < 160; i++) {
 		uint8_t val = tile_value(state, gstate, 1, tile, x, y);
-		printf("%x\n", val);
+		//printf("%x\n", val);
 		if (val != 0) {
 			gstate->canvas[canvas_offset + (i * BYTES_PER_PIXEL)] = 255;
 		}

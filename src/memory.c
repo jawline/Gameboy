@@ -105,10 +105,7 @@ uint8_t mem_get(memory* mem, uint16_t off) {
 }
 
 uint16_t mem_get16(memory* mem, uint16_t off) {
-	uint16_builder a;
-	a.low = mem_get(mem, off);
-	a.high = mem_get(mem, off + 1);
-	return a.full;
+	return mem_get(mem, off) + (mem_get(mem, off + 1) << 8);
 }
 
 void mem_set(memory* mem, uint16_t off, uint8_t v) {
@@ -117,8 +114,6 @@ void mem_set(memory* mem, uint16_t off, uint8_t v) {
 }
 
 void mem_set16(memory* mem, uint16_t off, uint16_t v) {
-	uint16_builder a;
-	a.full = v;
-	mem_set(mem, off, a.low);
-	mem_set(mem, off + 1, a.high);
+	mem_set(mem, off, v & 0xFF);
+	mem_set(mem, off + 1, v >> 8);
 }

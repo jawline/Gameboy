@@ -83,7 +83,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case CP_n:
-			cpu_set_flags(state, (state->registers.a - cpu_instr_nb(state)) == 0, 1, 0, 0); //TODO: Carry flags#
+			cpu_set_flags(state, (state->registers.a - cpu_instr_nb(state)) == 0, 1, 0, state->registers.a < cpu_instr_nb(state)); //TODO: HC
 			cpu_instr_m(state, 2);
 			break;
 
@@ -125,6 +125,8 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			if (cpu_is_flag(state, ZERO_FLAG)) {
 				cpu_call(state, call_loc, state->registers.pc);
 			}
+
+			cpu_instr_m(state, 3);
 
 			break;
 		}

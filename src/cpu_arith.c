@@ -2,14 +2,13 @@
 
 void cpu_inc_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg + 1;
-	uint8_t third_bit_carried = (*reg & 1) && (*reg & 2) && (*reg & 4);
-	cpu_set_flags(state, *reg == 0, 0, third_bit_carried, cpu_is_flag(state, CARRY_FLAG));
+	cpu_set_flags(state, *reg == 0, 0, 0, cpu_is_flag(state, CARRY_FLAG)); //TODO: HC
 	cpu_instr_m(state, 1);
 }
 
 void cpu_dec_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg - 1;
-	cpu_set_flags(state, *reg == 0, 1, 0, cpu_is_flag(state, CARRY_FLAG)); //TODO: Carry flags
+	cpu_set_flags(state, *reg == 0, 1, 1, cpu_is_flag(state, CARRY_FLAG)); //TODO:  HC
 	cpu_instr_m(state, 1);
 }
 
@@ -22,16 +21,20 @@ bool bit_3_carry(uint8_t v1, uint8_t v2) {
 }
 
 void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	uint8_t bit_3 = bit_3_carry(*reg, v);
-	uint8_t bit_7 = bit_7_carry(*reg, v);
+	uint16_t carried = *reg + v;
 	*reg = *reg + v;
-	cpu_set_flags(state, *reg == 0, 0, bit_3, bit_7);
+	cpu_set_flags(state, *reg == 0, 0, 0, carried > 255); //TODO: HC
 	cpu_instr_m(state, 1);
 }
 
+void cpu_adc_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	cpu_add_reg8(state, reg, cpu_is_flag(state, CARRY_FLAG) ? v + 1 : v);
+}
+
 void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
+	int16_t subbed = *reg - v;
 	*reg = *reg - v;
-	cpu_set_flags(state, *reg == 0, 1, 0, 0); //TODO: Carry flags
+	cpu_set_flags(state, *reg == 0, 1, 0, subbed < 0); //TODO: HC
 	cpu_instr_m(state, 1);
 }
 
@@ -118,7 +121,7 @@ void cpu_rl_reg8(cpu_state* state, uint8_t* reg) {
 	//We rotate a into the carry so
 	//its a left shift of 1 carrying
 	//the 8th bit at the start into the carry
-	uint8_t next_carry = *reg & (1 << 7);
+	uint8_t next_carry = *reg & 0x80;
 
 	*reg = *reg << 1;
 
@@ -135,7 +138,7 @@ void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
 	//We rotate a into the carry so
 	//its a left shift of 1 carrying
 	//the 8th bit at the start into the carry
-	uint8_t next_carry = *reg & (1 << 7);
+	uint8_t next_carry = *reg & 0x80;
 
 	*reg = *reg << 1;
 
@@ -150,6 +153,11 @@ void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
 void cpu_grid_xor8(cpu_state* state, uint8_t lnibble) {
 	uint8_t* reg = cpu_reg_bcdehla(state, lnibble - 0x8);
 	cpu_xor_reg8(state, &state->registers.a, *reg);
+}
+
+void cpu_grid_adc(cpu_state* state, uint8_t lnibble) {
+	uint8_t* reg = cpu_reg_bcdehla(state, lnibble - 0x8);
+	cpu_adc_reg8(state, &state->registers.a, *reg);
 }
 
 bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {

@@ -16,14 +16,12 @@ void cpu_ld16_nn(cpu_state* state, uint16_t* reg) {
 }
 
 bool cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble) {
-	DEBUG_OUT("CPU LD 16 IMM\n");
 	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
 	cpu_ld16_nn(state, reg);
 	return true;
 }
 
 bool cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble) {
-	DEBUG_OUT("CPU LD 8 IMM %x\n", gnibble);
 	cpu_ld8_n(state, cpu_reg_cela(state, gnibble));
 	return true;
 }
