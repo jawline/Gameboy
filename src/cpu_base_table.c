@@ -139,6 +139,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		//16 bit address loads
 		case LD_A_REF_nn:
 			state->registers.a = mem_get(&state->mem, cpu_instr_nw(state));
+			cpu_instr_m(state, 4); //TODO: This is a random number
 			break;
 
 		case LD_REF_nn_A:
@@ -158,6 +159,11 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 				cpu_ret(state);
 			}
 
+			break;
+
+		case RST_30:
+			cpu_call(state, 0x0030, state->registers.pc);
+			cpu_instr_m(state, 3);
 			break;
 		case RST_38:
 			cpu_call(state, 0x0038, state->registers.pc);

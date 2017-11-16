@@ -48,6 +48,7 @@ typedef enum {
 	
 	DISABLE_INTERRUPTS = 0xF3,
 	ENABLE_INTERRUPTS = 0xFB,
+	RST_30 = 0xF7,
 	RST_38 = 0xFF
 } cpu_ops;
 

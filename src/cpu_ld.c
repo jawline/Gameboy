@@ -40,7 +40,7 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 	if (c_instr_greater_nibble < 0x7 && c_instr_lesser_nibble < 0x8) {
 		uint8_t* dst;
 
-		switch (c_instr_greater_nibble) {
+		switch (c_instr_greater_nibble - 0x4) {
 			case 0:
 				dst = &state->registers.b;
 				break;
@@ -51,7 +51,8 @@ bool cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 				dst = &state->registers.h;
 				break;
 			default:
-				printf("Unhandled LD table %x\n", c_instr_greater_nibble);
+				printf("Unhandled LD table %x (%x)\n", c_instr, c_instr_greater_nibble);
+				exit(1);
 				break;
 		}
 
