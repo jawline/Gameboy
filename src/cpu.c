@@ -65,7 +65,7 @@ bool cpu_step(cpu_state* state) {
 	state->clock.m += state->registers.lc.m;
 	state->clock.t += state->registers.lc.t;
 
-	DEBUG_OUT("SPC=0x%02X INSTR=0x%02X (%i) PC=0x%02X SIZE=%i BC=0x%04X AF=0x%04X DE=0x%04X HL=0x%04X FLAGS=%01i%01i%01i%01i CLOCK=%i\n", start_pc, c_instr, c_instr, state->registers.pc, state->registers.pc - start_pc, state->registers.bc, state->registers.af, state->registers.de, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG), state->clock.t);
+	DEBUG_OUT("SPC=0x%02X INSTR=0x%02X (%i) PC=0x%02X SIZE=%i SP=0x%04X BC=0x%04X AF=0x%04X DE=0x%04X HL=0x%04X FLAGS=%01i%01i%01i%01i CLOCK=%i\n", start_pc, c_instr, c_instr, state->registers.pc, state->registers.pc - start_pc, state->registers.sp, state->registers.bc, state->registers.af, state->registers.de, state->registers.hl, cpu_is_flag(state, ZERO_FLAG), cpu_is_flag(state, SUBTRACT_FLAG), cpu_is_flag(state, HALF_CARRY_FLAG), cpu_is_flag(state, CARRY_FLAG), state->clock.t);
 
 	if (!state->registers.lc.m) {
 		printf("BAD INSTR CLK\n");
