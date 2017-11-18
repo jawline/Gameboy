@@ -1,6 +1,6 @@
 #include "cpu.h"
 
-bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
+void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 	switch (c_instr) {
 
 		case NOOP:
@@ -163,8 +163,6 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		default:
 			printf("OpCode %x Unknown\n", c_instr);
-			return false;
+			exit(1);
 	}
-
-	return true;
 }

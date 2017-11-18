@@ -10,7 +10,7 @@ void cpu_init(cpu_state* state) {
 	state->registers.f = 0;
 }
 
-bool cpu_step(cpu_state* state) {
+void cpu_step(cpu_state* state) {
 
 	memset(&state->registers.lc, 0, sizeof(state->registers.lc));
 	
@@ -50,9 +50,7 @@ bool cpu_step(cpu_state* state) {
 	} else if (c_instr_greater_nibble >= 0xC && c_instr_lesser_nibble == 0xF) {
 		cpu_rst_table_offset(state, c_instr_greater_nibble, 8);
 	} else {
-		if(!cpu_base_table(state, c_instr)) {
-			return false;
-		}
+		cpu_base_table(state, c_instr);
 	}
 
 	state->clock.m += state->registers.lc.m;
@@ -64,6 +62,4 @@ bool cpu_step(cpu_state* state) {
 		printf("BAD INSTR CLK\n");
 		exit(1);
 	}
-
-	return true;
 }

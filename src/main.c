@@ -31,7 +31,8 @@ int main(int argc, char const* const* argv) {
 	}
 #endif
 
-	while (cpu_step(&s)) {
+	while (true) {
+		cpu_step(&s);
 		DRAW_MODE redraw = gpu_step(&s, &gs);
 		//fgetc(stdin);
 		#ifdef VIEW_ENABLED

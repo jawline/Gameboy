@@ -61,13 +61,13 @@ extern const uint8_t SUBTRACT_FLAG;
 extern const uint8_t CARRY_FLAG;
 
 void cpu_init(cpu_state* state);
-bool cpu_step(cpu_state* state);
+void cpu_step(cpu_state* state);
 
 /**
  * Extended CPU Table Methods
  */
 
-bool ext_cpu_step(cpu_state* state);
+void ext_cpu_step(cpu_state* state);
 
 /**
  * Interrupt calls
@@ -157,6 +157,6 @@ void cpu_jr_flag(cpu_state* state, unsigned flag);
  * Base Table
  */
 
-bool cpu_base_table(cpu_state* state, uint8_t c_instr);
+void cpu_base_table(cpu_state* state, uint8_t c_instr);
 
 #endif //_CPU_DEF_H_

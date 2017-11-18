@@ -1,10 +1,11 @@
 #include "cpu.h"
+#include <stdlib.h>
 
 void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t reg, uint8_t bit) {
 	cpu_set_flags(state, (reg & (0x1 << bit)) == 0, 0, 1, cpu_is_flag(state, CARRY_FLAG));
 }
 
-bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
+void ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
@@ -25,12 +26,11 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 	//Custom logic for the HL
 	if (c_instr_lesser_nibble == 6) {
 		DEBUG_OUT("HL BIT NOT IMPL\n");
-		return false;
+		exit(1);
 	} else {
 		//It's an 8 bit reg instr
 		uint8_t* reg = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 		ext_cpu_step_bit_test_8bit_reg(state, *reg, selected_bit);
-		return true;
 	}
 }
 
@@ -40,23 +40,21 @@ void ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 	cpu_rl_reg8(state, reg);
 }
 
-bool ext_cpu_step(cpu_state* state) {
+void ext_cpu_step(cpu_state* state) {
 
 	DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
 	DEBUG_OUT("EXTInstr %x\n", c_instr);
 
 	if (c_instr >= 0x40 && c_instr < 0x80) {
-		return ext_cpu_step_bit(c_instr, state);
+		ext_cpu_step_bit(c_instr, state);
 	} else if (c_instr >= 0x10 && c_instr < 0x16) {
 		ext_cpu_rl_8bit(state, c_instr);
 	} else {
 		switch (c_instr) {
 			default:
 				printf("Unknown EXT instruction %x\n", c_instr);
-				return false;
+				exit(1);
 		}
 	}
-
-	return true;
 }
