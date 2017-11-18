@@ -52,7 +52,7 @@ void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 }
 
 void cpu_xor_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	*reg = *reg ^ v;
+	*reg = *reg != v;
 	cpu_set_flags(state, *reg == 0, 0, 0, 0);
 	cpu_instr_m(state, 1);
 }
@@ -108,8 +108,7 @@ void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {
 }
 
 void cpu_grid_inc_16(cpu_state* state, uint8_t gnibble) {
-	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
-	cpu_inc_reg16(state, reg);
+	cpu_inc_reg16(state, cpu_reg_16_bdhs(state, gnibble));
 }
 
 void cpu_rl_reg8(cpu_state* state, uint8_t* reg) {
@@ -148,13 +147,11 @@ void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
 }
 
 void cpu_grid_xor8(cpu_state* state, uint8_t lnibble) {
-	uint8_t* reg = cpu_reg_bcdehla(state, lnibble - 0x8);
-	cpu_xor_reg8(state, &state->registers.a, *reg);
+	cpu_xor_reg8(state, &state->registers.a, *cpu_reg_bcdehla(state, lnibble - 0x8));
 }
 
 void cpu_grid_adc(cpu_state* state, uint8_t lnibble) {
-	uint8_t* reg = cpu_reg_bcdehla(state, lnibble - 0x8);
-	cpu_adc_reg8(state, &state->registers.a, *reg);
+	cpu_adc_reg8(state, &state->registers.a, *cpu_reg_bcdehla(state, lnibble - 0x8));
 }
 
 void cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {

@@ -11,7 +11,7 @@ void ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
 
 	//DEBUG_OUT("EXT CPU Step Bit instr %x %x\n", c_instr_greater_nibble, c_instr_lesser_nibble);
-
+	
 	uint8_t start_offset = 0;
 
 	if (c_instr_lesser_nibble >= 8) {
@@ -21,7 +21,7 @@ void ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 
 	uint8_t selected_bit = (c_instr_greater_nibble - 4) * 2 + start_offset;
 
-	//DEBUG_OUT("Selected Bit %x\n", selected_bit);
+	DEBUG_OUT("Selected Bit %x %x\n", c_instr, selected_bit);
 
 	//Custom logic for the HL
 	if (c_instr_lesser_nibble == 6) {

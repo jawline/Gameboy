@@ -12,7 +12,7 @@ uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off) {
 	}
 
 	DEBUG_OUT("ERR LOOKUP 8 BIT REG (BDH) given %i\n", off);
-	return 0;
+	exit(1);
 }
 
 uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off) {
@@ -29,7 +29,7 @@ uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off) {
 	}
 
 	DEBUG_OUT("ERR LOOKUP 16 BIT REG\n");
-	return 0;
+	exit(1);
 }
 
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble) {
@@ -52,7 +52,7 @@ uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble) {
 	}
 
 	DEBUG_OUT("Should be unrachable hit BCDEHLA\n");
-	return 0;
+	exit(1);
 }
 
 uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off) {
@@ -68,7 +68,7 @@ uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off) {
 	}
 
 	DEBUG_OUT("Should be unreachable hit CELA\n");
-	return 0;
+	exit(1);
 }
 
 uint8_t cpu_instr_nb(cpu_state* state) {
