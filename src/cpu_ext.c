@@ -1,8 +1,7 @@
 #include "cpu.h"
 
-void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t* reg, uint8_t bit) {
-	uint8_t tested = *reg & (0x1 << bit);
-	cpu_set_flags(state, *reg & (0x1 << bit), 0, 1, cpu_is_flag(state, CARRY_FLAG));
+void ext_cpu_step_bit_test_8bit_reg(cpu_state* state, uint8_t reg, uint8_t bit) {
+	cpu_set_flags(state, (reg & (0x1 << bit)) == 0, 0, 1, cpu_is_flag(state, CARRY_FLAG));
 }
 
 bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
@@ -30,7 +29,7 @@ bool ext_cpu_step_bit(uint8_t c_instr, cpu_state* state) {
 	} else {
 		//It's an 8 bit reg instr
 		uint8_t* reg = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
-		ext_cpu_step_bit_test_8bit_reg(state, reg, selected_bit);
+		ext_cpu_step_bit_test_8bit_reg(state, *reg, selected_bit);
 		return true;
 	}
 }

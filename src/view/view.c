@@ -7,8 +7,8 @@ uint8_t view_init(view_t* view) {
 		return 0;
 	}
 
-	view->width = 512;
-	view->height = 512;
+	view->width = 800;
+	view->height = 600;
 
 	view->window = SDL_CreateWindow("Gameboy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, view->width, view->height, SDL_WINDOW_SHOWN);
 
@@ -18,7 +18,7 @@ uint8_t view_init(view_t* view) {
 		return 0;
 	}
 
-	view->renderer = SDL_CreateRenderer(view->window, -1, NULL);
+	view->renderer = SDL_CreateRenderer(view->window, -1, SDL_RENDERER_ACCELERATED);
 	
 	if (!view->renderer){
 		printf("%s\n", SDL_GetError());
@@ -49,14 +49,14 @@ uint8_t view_init(view_t* view) {
 
 void copy_canvas(uint8_t* pixels, int pitch, gpu_state* gs) {
 	
-	const CANVAS_BPP = 4;
+	const unsigned int SDL_BPP = 4;
 
 	#define GS_PIXEL(x, y, o) gs->canvas[(y * (INTERNAL_WIDTH * BYTES_PER_PIXEL)) + (x * BYTES_PER_PIXEL) + o];
 	
 	for (unsigned int y = 0; y < INTERNAL_HEIGHT; y++) {
 		uint8_t* line_start = pixels + (pitch * y);
 		for (unsigned int x = 0; x < INTERNAL_WIDTH; x++) {
-			uint8_t* start_pixel = line_start + (x * CANVAS_BPP);
+			uint8_t* start_pixel = line_start + (x * SDL_BPP);
 			start_pixel[0] = GS_PIXEL(x, y, 0);
 			start_pixel[1] = GS_PIXEL(x, y, 1);
 			start_pixel[2] = GS_PIXEL(x, y, 2);

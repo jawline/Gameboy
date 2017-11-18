@@ -11,7 +11,7 @@ uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off) {
 			return &state->registers.h;
 	}
 
-	DEBUG_OUT("ERR LOOKUP 8 BIT REG (BDH)\n");
+	DEBUG_OUT("ERR LOOKUP 8 BIT REG (BDH) given %i\n", off);
 	return 0;
 }
 

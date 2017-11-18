@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <stdlib.h>
 
 void cpu_inc_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg + 1;
@@ -68,12 +69,12 @@ void cpu_dec_reg16(cpu_state* state, uint16_t* reg) {
 	//No flags affected
 }
 
-bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
+void cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
 
 	//Row of (HL) isntructions
 	if (gnibble == 0x3) {
 		printf("HL NOT DONE\n");
-		return false;
+		exit(1);
 	} else {
 		uint8_t* reg = cpu_reg_8_bdh(state, gnibble);
 		
@@ -86,11 +87,9 @@ bool cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 				break;
 		}
 	}
-
-	return true;
 }
 
-bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
+void cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
 
 	uint8_t* reg = cpu_reg_cela(state, gnibble);
 		
@@ -102,8 +101,6 @@ bool cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 			cpu_dec_reg8(state, reg);
 			break;
 	}
-
-	return true;
 }
 
 void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {
@@ -160,11 +157,11 @@ void cpu_grid_adc(cpu_state* state, uint8_t lnibble) {
 	cpu_adc_reg8(state, &state->registers.a, *reg);
 }
 
-bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
+void cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble) {
 
 	if (lnibble == 0x6) {
 		printf("GRID HL METHODS NOT IMPL YET\n");
-		return false;
+		exit(1);
 	}
 
 	uint8_t* reg = cpu_reg_bcdehla(state, lnibble);
@@ -183,6 +180,4 @@ bool cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lni
 			cpu_or_reg8(state, &state->registers.a, *reg);
 			break;
 	}
-	
-	return true;
 }

@@ -1,5 +1,6 @@
 #include "gpu.h"
 #include <string.h>
+#include <stdlib.h>
 
 void gpu_init(gpu_state* state) {
 	memset(state, 0, sizeof(gpu_state));

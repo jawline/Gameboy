@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include <stdio.h>
+#include <string.h>
 
 const uint16_t START_PC = 0x0;
 
@@ -15,7 +16,7 @@ bool cpu_step(cpu_state* state) {
 	
 	uint16_t start_pc = state->registers.pc;
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
-	//DEBUG_OUT("Instr 0x%02X PC(idx):%i mem_get:%02X (%i)\n", c_instr, state->registers.pc, mem_get(&state->mem, state->registers.pc), mem_get(&state->mem, state->registers.pc));
+	DEBUG_OUT("Instr 0x%02X PC(idx):%i mem_get:%02X (%i)\n", c_instr, state->registers.pc, mem_get(&state->mem, state->registers.pc), mem_get(&state->mem, state->registers.pc));
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
@@ -23,27 +24,17 @@ bool cpu_step(cpu_state* state) {
 	if (c_instr == EXT_OP) {
 		return ext_cpu_step(state);
 	} if (c_instr >= 0x40 && c_instr < 0x80 && c_instr != HALT) {
-		if (!cpu_ld_table_large(state, c_instr)) {
-			return false;
-		}
+		cpu_ld_table_large(state, c_instr);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x1) {
-		if (!cpu_ld_16_imm_list(state, c_instr_greater_nibble)) {
-			return false;
-		}
+		cpu_ld_16_imm_list(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0xE) {
-		if (!cpu_ld_8_n_list_E(state, c_instr_greater_nibble)) {
-			return false;
-		}
+		cpu_ld_8_n_list_E(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0x4 || c_instr_lesser_nibble == 0x5)) {
-		if (!cpu_grid_0x00x3_0x40x5(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
-			return false;
-		}
+		cpu_grid_0x00x3_0x40x5(state, c_instr_greater_nibble, c_instr_lesser_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x6) {
 		cpu_ld_list_0x6(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0xC || c_instr_lesser_nibble == 0xD)) {
-		if (!cpu_grid_0x00x3_0xC0xD(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
-			return false;
-		}
+		cpu_grid_0x00x3_0xC0xD(state, c_instr_greater_nibble, c_instr_lesser_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0xB) {
 		cpu_grid_dec_16(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x3) {
@@ -53,9 +44,11 @@ bool cpu_step(cpu_state* state) {
 	} else if (c_instr_greater_nibble == 0x8 && c_instr_lesser_nibble >= 0x8) {
 		cpu_grid_adc(state, c_instr_lesser_nibble);
 	} else if (c_instr_greater_nibble >= 0x8 && c_instr_greater_nibble <= 0xB && c_instr_lesser_nibble < 8) {
-		if (!cpu_grid_arith_0x80xB_0x00x7(state, c_instr_greater_nibble, c_instr_lesser_nibble)) {
-			return false;
-		}
+		cpu_grid_arith_0x80xB_0x00x7(state, c_instr_greater_nibble, c_instr_lesser_nibble);
+	} else if (c_instr_greater_nibble >= 0xC && c_instr_lesser_nibble == 0x7) {
+		cpu_rst_table_offset(state, c_instr_greater_nibble, 0);
+	} else if (c_instr_greater_nibble >= 0xC && c_instr_lesser_nibble == 0xF) {
+		cpu_rst_table_offset(state, c_instr_greater_nibble, 8);
 	} else {
 		if(!cpu_base_table(state, c_instr)) {
 			return false;

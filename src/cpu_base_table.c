@@ -23,6 +23,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		/**
 		 * Relative Jumps
 		 */
+
 		case JR_n:
 			cpu_jr_flag(state, 1);
 			cpu_instr_m(state, 1);
@@ -35,6 +36,7 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_jr_flag(state, !cpu_is_flag(state, ZERO_FLAG));
 			cpu_instr_m(state, 2);
 			break;
+
 		/**
 		 * End of relative jumps
 		 */
@@ -153,21 +155,12 @@ bool cpu_base_table(cpu_state* state, uint8_t c_instr) {
 
 		case RET_NZ:
 
-			DEBUG_OUT("RET NZ\n");
-
 			if (!cpu_is_flag(state, ZERO_FLAG)) {
 				cpu_ret(state);
 			}
 
 			break;
 
-		case RST_30:
-			cpu_call(state, 0x0030, state->registers.pc);
-			cpu_instr_m(state, 3);
-			break;
-		case RST_38:
-			cpu_call(state, 0x0038, state->registers.pc);
-			break;
 		default:
 			printf("OpCode %x Unknown\n", c_instr);
 			return false;
