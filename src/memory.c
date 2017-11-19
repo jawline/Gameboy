@@ -55,7 +55,7 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 			 * Interrupts Flag
 			 */
 			case 0xFF0F:
-				return &mem->intflag;
+				return &mem->interrupts;
 
 			case 0xFF11:
 				return &mem->nr11;
@@ -92,8 +92,10 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 				return 0;
 		}
 
-	} else if (off <= 0xFFFF) {
+	} else if (off <= 0xFFFE) {
 		return &mem->topram[off - END_UNUSED_IO];
+	} else {
+		return &mem->interrupts_enabled;
 	}
 
 	printf("unknown ram lookup %x", off);

@@ -63,6 +63,8 @@ extern const uint8_t CARRY_FLAG;
 void cpu_init(cpu_state* state);
 void cpu_step(cpu_state* state);
 
+void cpu_check_interrupts(cpu_state* state);
+
 /**
  * Extended CPU Table Methods
  */

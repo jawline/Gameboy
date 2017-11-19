@@ -46,7 +46,8 @@ typedef struct {
 	uint8_t nr51;
 	uint8_t nr52;
 
-	uint8_t intflag;
+	uint8_t interrupts;
+	uint8_t interrupts_enabled;
 } memory;
 
 void memory_init(memory* mem, uint8_t* rom);

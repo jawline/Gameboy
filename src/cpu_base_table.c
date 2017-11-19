@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <stdlib.h>
 
 void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 	switch (c_instr) {
@@ -84,10 +85,14 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_instr_m(state, 3);
 			break;
 
-		case CP_n:
-			cpu_set_flags(state, (state->registers.a - cpu_instr_nb(state)) == 0, 1, 0, state->registers.a < cpu_instr_nb(state)); //TODO: HC
+		case CP_n: {
+			uint8_t nb = cpu_instr_nb(state);
+			cpu_set_flags(state, (state->registers.a - nb) == 0,
+				1, 0, state->registers.a < nb); //TODO: HC
+			DEBUG_OUT("Compare %x %x\n", state->registers.a, nb);
 			cpu_instr_m(state, 2);
 			break;
+		}
 
 		case CPL_A:
 		    state->registers.a = ~state->registers.a;
@@ -95,11 +100,13 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 
 		case ENABLE_INTERRUPTS:
+			DEBUG_OUT("Interrupts Enabled\n");
 			cpu_setinterrupts(state, 1);
 			cpu_instr_m(state, 1);
 			break;
 
 		case DISABLE_INTERRUPTS:
+			DEBUG_OUT("Interrupts Disabled\n");
 			cpu_setinterrupts(state, 0);
 			cpu_instr_m(state, 1);
 			break;

@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <stdlib.h>
 
 uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off) {
 
@@ -56,6 +57,7 @@ uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble) {
 }
 
 uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off) {
+
 	switch (off) {
 		case 0:
 			return &state->registers.c;
