@@ -2,6 +2,7 @@
 #include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
 
 void memory_init(memory* mem, uint8_t* rom) {
@@ -13,9 +14,9 @@ void memory_init(memory* mem, uint8_t* rom) {
 	}
 	printf("\n");
 
-	mem->ram = malloc(8192);
-	mem->vram = malloc(8192);
-	mem->topram = malloc(0xFFFF - 0xFF80);
+	mem->ram = new uint8_t[8192];
+	mem->vram = new uint8_t[8192];
+	mem->topram = new uint8_t[0xFFFF - 0xFF80];
 }
 
 uint8_t* ptr(memory* mem, uint16_t off) {
@@ -32,7 +33,7 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 		return &mem->vram[off - ROM_END];
 	} else if (off < SWITCH_RAM_END) {
 		printf("I don't know how switch ram works yet %x\n", off);
-		return 0;
+		exit(1);
 	} else if (off < MAIN_RAM_END) {
 		return &mem->ram[off - SWITCH_RAM_END];
 	} else if (off < MAIN_RAM_ECHO) {
@@ -55,7 +56,7 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 			 * Interrupts Flag
 			 */
 			case 0xFF0F:
-				return &mem->interrupts;
+				return &mem->intflag;
 
 			case 0xFF11:
 				return &mem->nr11;
@@ -89,21 +90,18 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 				return &mem->obp1;
 			default:
 				printf("Bad Interrupt Register: %x\n", off);
-				return 0;
+				exit(1);
 		}
 
-	} else if (off <= 0xFFFE) {
+	} else if (off <= 0xFFFF) {
 		return &mem->topram[off - END_UNUSED_IO];
-	} else {
-		return &mem->interrupts_enabled;
 	}
 
-	printf("unknown ram lookup %x", off);
-	return 0;
+	printf("ERR Unknown Ram Region\n");
+	exit(1);
 }
 
 uint8_t mem_get(memory* mem, uint16_t off) {
-	MEMORY_DEBUG("Get 0x%x, 0x%x\n", off, *ptr(mem, off));
 	return *ptr(mem, off);
 }
 
@@ -112,7 +110,7 @@ uint16_t mem_get16(memory* mem, uint16_t off) {
 }
 
 void mem_set(memory* mem, uint16_t off, uint8_t v) {
-	MEMORY_DEBUG("Set 0x%x to 0x%i\n", off, v);
+	MEMORY_DEBUG("Set %x to %i\n", off, v);
 	*ptr(mem, off) = v;
 }
 

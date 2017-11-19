@@ -42,19 +42,15 @@ void ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 
 void ext_cpu_step(cpu_state* state) {
 
-	DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
+	//DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
-	DEBUG_OUT("EXTInstr %x\n", c_instr);
+	//DEBUG_OUT("EXTInstr %x\n", c_instr);
 
 	if (c_instr >= 0x40 && c_instr < 0x80) {
 		ext_cpu_step_bit(c_instr, state);
 	} else if (c_instr >= 0x10 && c_instr < 0x16) {
 		ext_cpu_rl_8bit(state, c_instr);
 	} else {
-		switch (c_instr) {
-			default:
-				printf("Unknown EXT instruction %x\n", c_instr);
-				exit(1);
-		}
+		exit(1);
 	}
 }

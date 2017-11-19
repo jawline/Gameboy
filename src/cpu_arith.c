@@ -2,14 +2,15 @@
 #include <stdlib.h>
 
 void cpu_inc_reg8(cpu_state* state, uint8_t* reg) {
+	uint8_t half_add = (*reg & 0xF) + 1;
 	*reg = *reg + 1;
-	cpu_set_flags(state, *reg == 0, 0, 0, cpu_is_flag(state, CARRY_FLAG)); //TODO: HC
+	cpu_set_flags(state, *reg == 0, 0, half_add > 15, cpu_is_flag(state, CARRY_FLAG));
 	cpu_instr_m(state, 1);
 }
 
 void cpu_dec_reg8(cpu_state* state, uint8_t* reg) {
 	*reg = *reg - 1;
-	cpu_set_flags(state, *reg == 0, 1, 1, cpu_is_flag(state, CARRY_FLAG)); //TODO:  HC
+	cpu_set_flags(state, *reg == 0, 1, 1, 0); //TODO:  Carry Flags
 	cpu_instr_m(state, 1);
 }
 
@@ -23,8 +24,9 @@ bool bit_3_carry(uint8_t v1, uint8_t v2) {
 
 void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	uint16_t carried = *reg + v;
+	uint8_t half_carry = (*reg & 0xF) + (v & 0xF);
 	*reg = *reg + v;
-	cpu_set_flags(state, *reg == 0, 0, 0, carried > 255); //TODO: HC
+	cpu_set_flags(state, *reg == 0, 0, half_carry > 15, carried > 255); //TODO: HC
 	cpu_instr_m(state, 1);
 }
 

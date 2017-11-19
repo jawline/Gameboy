@@ -86,6 +86,7 @@ DRAW_MODE gpu_step(cpu_state* state, gpu_state* gstate) {
 		case VBLANK:
 			if (gstate->cycles_in_mode >= 4560) {
 				gstate->line = 0;
+				state->mem.interrupts |= 0x1;
 				gpu_enter_mode(gstate, HBLANK);
 				return REDRAW_ALL;
 			}

@@ -7,8 +7,7 @@ void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val) {
 }
 
 void cpu_ld8_n(cpu_state* state, uint8_t* reg) {
-	uint8_t lval = cpu_instr_nb(state);
-	cpu_ld8(state, reg, lval);
+	cpu_ld8(state, reg, cpu_instr_nb(state));
 }
 
 void cpu_ld16_nn(cpu_state* state, uint16_t* reg) {
@@ -17,8 +16,7 @@ void cpu_ld16_nn(cpu_state* state, uint16_t* reg) {
 }
 
 void cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble) {
-	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
-	cpu_ld16_nn(state, reg);
+	cpu_ld16_nn(state, cpu_reg_16_bdhs(state, gnibble));
 }
 
 void cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble) {
@@ -42,6 +40,7 @@ void cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 
 	//Either single byte loads between registers or from (HL)
 	if (c_instr_greater_nibble < 0x7 && c_instr_lesser_nibble < 0x8) {
+
 		uint8_t* dst;
 
 		switch (c_instr_greater_nibble - 0x4) {
@@ -67,25 +66,18 @@ void cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 			cpu_ld8(state, dst, *src);
 		}
 
-		return;
-	}
-
-	//Saving a register to HL
-	if (c_instr_greater_nibble == 0x7 && c_instr_lesser_nibble < 0x8) {
-		uint8_t v = *cpu_reg_bcdehla(state, c_instr_lesser_nibble);
-		mem_set(&state->mem, state->registers.hl, v);
+	} else if (c_instr_greater_nibble == 0x7 && c_instr_lesser_nibble < 0x8) { //Saving a register to HL
+		mem_set(&state->mem, state->registers.hl, *cpu_reg_bcdehla(state, c_instr_lesser_nibble));
 		cpu_instr_m(state, 2);
-		return;
+	} else {
+
+		if (c_instr_lesser_nibble == 0xE) {
+			printf("Unhandled LD (HL INSTR)\n");
+			exit(1);
+		}
+
+		uint8_t* dst = cpu_reg_cela(state, c_instr_greater_nibble - 0x4);
+		uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble - 0x8);
+		cpu_ld8(state, dst, *src);
 	}
-
-	if (c_instr_lesser_nibble == 0xE) {
-		printf("Unhandled LD (HL INSTR)\n");
-		exit(1);
-	}
-
-	uint8_t* dst = cpu_reg_cela(state, c_instr_greater_nibble - 0x4);
-	uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble - 0x8);
-	cpu_ld8(state, dst, *src);
-
-	return;
 }
