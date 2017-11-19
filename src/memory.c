@@ -101,6 +101,7 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 }
 
 uint8_t mem_get(memory* mem, uint16_t off) {
+	MEMORY_DEBUG("Get 0x%x, 0x%x\n", off, *ptr(mem, off));
 	return *ptr(mem, off);
 }
 
@@ -109,7 +110,7 @@ uint16_t mem_get16(memory* mem, uint16_t off) {
 }
 
 void mem_set(memory* mem, uint16_t off, uint8_t v) {
-	MEMORY_DEBUG("Set %x to %i\n", off, v);
+	MEMORY_DEBUG("Set 0x%x to 0x%i\n", off, v);
 	*ptr(mem, off) = v;
 }
 

@@ -13,7 +13,7 @@ void cpu_ret(cpu_state* state) {
 
 void cpu_rst_table_offset(cpu_state* state, uint8_t gnibble, uint16_t offset) {
 	uint16_t callsite = offset + (0x10 * (gnibble - 0xC));
-	DEBUG_OUT("RST %i\n", callsite);
+	DEBUG_OUT("RST %x\n", callsite);
 	cpu_call(state, callsite, state->registers.pc);
 	cpu_instr_m(state, 8);
 }
