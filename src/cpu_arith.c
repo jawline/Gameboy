@@ -54,7 +54,7 @@ void cpu_or_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 }
 
 void cpu_xor_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
-	*reg = *reg != v;
+	*reg = *reg ^ v;
 	cpu_set_flags(state, *reg == 0, 0, 0, 0);
 	cpu_instr_m(state, 1);
 }

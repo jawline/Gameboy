@@ -13,15 +13,15 @@ void cpu_init(cpu_state* state) {
 }
 
 void cpu_check_interrupts(cpu_state* state) {
-	if (state->interrupts && state->mem.interrupts_enabled && state->mem.interrupts) {
+	if (state->interrupts & state->mem.interrupts_enabled & state->mem.interrupts) {
 		
 		uint8_t mask_with_enabled = state->mem.interrupts_enabled & state->mem.interrupts;
-
-		state->mem.interrupts = 0;
 
 		if (mask_with_enabled & 0x1) {
 			state->mem.interrupts &= (0xFF - 0x1);
 			cpu_call(state, 0x0040, state->registers.pc);
+		} else {
+
 		}
 	}
 }
@@ -32,7 +32,7 @@ void cpu_step(cpu_state* state) {
 	
 	uint16_t start_pc = state->registers.pc;
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
-	//DEBUG_OUT("Instr 0x%02X PC(idx):%i mem_get:%02X (%i)\n", c_instr, state->registers.pc, mem_get(&state->mem, state->registers.pc), mem_get(&state->mem, state->registers.pc));
+	DEBUG_OUT("Instr 0x%02X PC(idx):%x\n", c_instr, state->registers.pc);
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;

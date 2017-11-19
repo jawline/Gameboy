@@ -76,6 +76,7 @@ DRAW_MODE gpu_step(cpu_state* state, gpu_state* gstate) {
 		case HBLANK:
 			if (gstate->cycles_in_mode >= 204) {
 				gstate->line++;
+				state->mem.ly = gstate->line;
 				if (gstate->line == 145) {
 					gpu_enter_mode(gstate, VBLANK);
 				} else {
@@ -84,6 +85,11 @@ DRAW_MODE gpu_step(cpu_state* state, gpu_state* gstate) {
 			}
 			break;
 		case VBLANK:
+			
+			if (gstate->cycles_in_mode % 204 == 0) {
+				state->mem.ly++;
+			}
+
 			if (gstate->cycles_in_mode >= 4560) {
 				gstate->line = 0;
 				state->mem.interrupts |= 0x1;
