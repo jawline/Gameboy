@@ -50,7 +50,6 @@ int main(int argc, char const* const* argv) {
 #ifdef VIEW_ENABLED
 	while (true) {
 		view_render(&view, &s, &gs);
-		usleep(100);
 	}
 #endif
 

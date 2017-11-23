@@ -2,9 +2,7 @@
 #define _MEMORY_DEF_H_
 #include <stdint.h>
 
-#define DEBUG
-
-#ifdef DEBUG 
+#ifdef M_DEBUG 
 #define MEMORY_DEBUG(...) printf(__VA_ARGS__)
 #else
 #define MEMORY_DEBUG(...)

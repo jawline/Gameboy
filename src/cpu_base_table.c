@@ -95,7 +95,7 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		}
 
 		case CPL_A:
-		    state->registers.a = ~state->registers.a;
+			state->registers.a = ~state->registers.a;
 			cpu_set_flags(state, cpu_is_flag(state, ZERO_FLAG), 1, 1, cpu_is_flag(state, CARRY_FLAG));
 			break;
 
@@ -121,12 +121,10 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_instr_m(state, 4);
 			break;
 		
-		case CALL_nn: {
-			uint16_t call_loc = cpu_instr_nw(state);
-			cpu_call(state, call_loc, state->registers.pc);
+		case CALL_nn:
+			cpu_call(state, cpu_instr_nw(state), state->registers.pc);
 			cpu_instr_m(state, 3);
 			break;
-		}
 
 		case CALL_Z_nn: {
 			uint16_t call_loc = cpu_instr_nw(state);
