@@ -4,13 +4,15 @@
 
 #define BIOS_ENABLED 1
 
-char emu_init(cpu_state* state, gpu_state* gstate, char const* bios, char const* rom) {
+char emu_init(cpu_state* state, gpu_state* gstate, char* title, char const* bios, char const* rom) {
 	uint8_t* romdat = rom_load(rom, ROM_SIZE);
 	uint8_t* bootdat = rom_load(bios, BIOS_SIZE);
 
-	if (!romdat) {
+	if (!bootdat || !romdat) {
 		return 0;
 	}
+
+	extract_title(title, romdat);
 	
 	cpu_init(state);
 	gpu_init(gstate);

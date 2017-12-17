@@ -12,11 +12,6 @@ void memory_init(memory* mem, uint8_t* rom, uint8_t* bootrom) {
 	mem->bootrom_enabled = 1;
 
 	mem->rom = rom;
-	
-	for (unsigned int i = 0; i < 256; i++) {
-		printf("%i:%02X ", i, mem->rom[i]);
-	}
-	printf("\n");
 
 	mem->ram = malloc(8192);
 	mem->vram = malloc(8192);

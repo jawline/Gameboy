@@ -1,6 +1,6 @@
 #include "view.h"
 
-uint8_t view_init(view_t* view) {
+uint8_t view_init(view_t* view, char const* title) {
 
 	if (SDL_Init(SDL_INIT_VIDEO) != 0){
 		printf("%s\n", SDL_GetError());
@@ -10,7 +10,7 @@ uint8_t view_init(view_t* view) {
 	view->width = 800;
 	view->height = 600;
 
-	view->window = SDL_CreateWindow("Gameboy", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, view->width, view->height, SDL_WINDOW_SHOWN);
+	view->window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, view->width, view->height, SDL_WINDOW_SHOWN);
 
 	if (!view->window) {
 		printf("%s\n", SDL_GetError());

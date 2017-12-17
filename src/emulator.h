@@ -3,6 +3,6 @@
 #include "cpu.h"
 #include "gpu.h"
 
-char emu_init(cpu_state* state, gpu_state* gpu, char const* bios, char const* rom);
+char emu_init(cpu_state* state, gpu_state* gpu, char* romname, char const* bios, char const* rom);
 
 #endif

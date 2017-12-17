@@ -4,8 +4,9 @@
 
 const uint16_t ROM_SIZE;
 const uint16_t BIOS_SIZE;
+const uint16_t TITLE_SIZE;
 
 uint8_t* rom_load(char const* rom_path, const uint16_t size);
-void extract_title(char* title, char const* rom);
+void extract_title(char* title, uint8_t const* rom);
 
 #endif
