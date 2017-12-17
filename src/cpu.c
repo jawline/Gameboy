@@ -3,11 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-const uint16_t START_PC = 0x100;
-
 void cpu_init(cpu_state* state) {
 	memset(&state->registers, 0, sizeof(state->registers));
-	state->registers.pc = START_PC;
 	state->registers.f = 0;
 	state->interrupts = 1;
 	state->mem.interrupts_enabled = 0xFF;

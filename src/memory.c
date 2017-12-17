@@ -1,11 +1,16 @@
 #include "memory.h"
 #include "types.h"
+#include "romloader.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void memory_init(memory* mem, uint8_t* rom) {
+void memory_init(memory* mem, uint8_t* rom, uint8_t* bootrom) {
 	memset(mem, 0, sizeof(memory));
+
+	mem->bootrom = bootrom;
+	mem->bootrom_enabled = 1;
+
 	mem->rom = rom;
 	
 	for (unsigned int i = 0; i < 256; i++) {
@@ -26,7 +31,9 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 	const uint16_t MAIN_RAM_ECHO = 0xFE00;
 	const uint16_t END_UNUSED_IO = 0xFF80;
 
-	if (off < ROM_END) {
+	if (off < BIOS_SIZE && mem->bootrom_enabled) {
+		return &mem->bootrom[off];
+	} if (off < ROM_END) {
 		return &mem->rom[off];
 	} else if (off < VRAM_END) {
 		return &mem->vram[off - ROM_END];

@@ -11,7 +11,6 @@ INSTALL_EXE_PATH = /usr/bin/
 INSTALL_LIB_PATH = /usr/lib/
 
 #Compiler settings
-CC=gcc
 CFLAGS=-DDEBUG -c -Wall -ggdb -std=c11 -I/usr/local/Cellar/sdl2/2.0.6/include/
 LDFLAGS=-ggdb -I/usr/local/Cellar/sdl2/2.0.6/include/ -L/usr/local/Cellar/sdl2/2.0.6/lib/ -lSDL2
 

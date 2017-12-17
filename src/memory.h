@@ -9,7 +9,10 @@
 #endif
 
 typedef struct {
+	
+	uint8_t* bootrom;
 	uint8_t* rom;
+
 	uint8_t* ram;
 	uint8_t* vram;
 	uint8_t* topram;
@@ -48,9 +51,11 @@ typedef struct {
 
 	uint8_t interrupts;
 	uint8_t interrupts_enabled;
+
+	unsigned bootrom_enabled:1;
 } memory;
 
-void memory_init(memory* mem, uint8_t* rom);
+void memory_init(memory* mem, uint8_t* rom, uint8_t* bootrom);
 
 uint8_t mem_get(memory* mem, uint16_t off);
 uint16_t mem_get16(memory* mem, uint16_t off);
