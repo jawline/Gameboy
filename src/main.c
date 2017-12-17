@@ -36,10 +36,6 @@ int main(int argc, char const* const* argv) {
 				view_render(&view, &s, &gs);
 			}
 		#endif
-
-		if (s.clock.t > 4000) {
-			//break;
-		}
 	}
 
 #ifdef VIEW_ENABLED
