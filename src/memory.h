@@ -8,6 +8,11 @@
 #define MEMORY_DEBUG(...)
 #endif
 
+#define SCY 0xFF42
+#define SCX 0xFF43
+#define LY 0xFF44
+#define LX 0xFF45
+
 typedef struct {
 	
 	uint8_t* bootrom;
@@ -19,37 +24,7 @@ typedef struct {
 
 	uint8_t* sprite_attrib;
 
-	uint8_t p1;
-	uint8_t sb;
-	uint8_t sc;
-
-	//Should be reset on write
-	uint8_t div;
-
-	uint8_t tima;
-	uint8_t tma;
-	uint8_t tac;
-
-	uint8_t lcdc;
-	uint8_t stat;
-	uint8_t scy;
-	uint8_t scx;
-
-	uint8_t ly;
-	uint8_t lyc;
-
-	uint8_t bgp;
-	uint8_t obp0;
-	uint8_t obp1;
-
-
-	//Sound mode
-	uint8_t nr11;
-	uint8_t nr12;
-
-	uint8_t nr50;
-	uint8_t nr51;
-	uint8_t nr52;
+	uint8_t* ioram;
 
 	uint8_t interrupts;
 	uint8_t interrupts_enabled;

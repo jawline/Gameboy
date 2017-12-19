@@ -70,8 +70,14 @@ void cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 
 	//Row of (HL) isntructions
 	if (gnibble == 0x3) {
-		printf("HL NOT DONE\n");
-		exit(1);
+		switch (lnibble) {
+			case 4: //Inc
+				cpu_inc_reg16(state, &state->registers.hl);
+				break;
+			case 5: //Dec
+				cpu_dec_reg16(state, &state->registers.hl);
+				break;
+		}
 	} else {
 		uint8_t* reg = cpu_reg_8_bdh(state, gnibble);
 		

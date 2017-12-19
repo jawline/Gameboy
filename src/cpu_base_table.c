@@ -74,9 +74,15 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case LDI_REF_HL_A:
 			//Set (HL) to a
 			//Increment HL
-			//Increment PC
 			mem_set(&state->mem, state->registers.hl, state->registers.a);
 			state->registers.hl++;
+			cpu_instr_m(state, 2);
+			break;
+
+		case LDI_A_REF_HL:
+			//Load A from address HL
+			//Increment HL
+			state->registers.a = mem_get(&state->mem, state->registers.hl++);
 			cpu_instr_m(state, 2);
 			break;
 
@@ -94,9 +100,33 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			break;
 		}
 
+		case ADD_n: {
+			cpu_add_reg8(state, &state->registers.a, cpu_instr_nb(state));
+			cpu_instr_m(state, 4);
+			break;
+		}
+
+		case SUB_n: {
+			cpu_sub_reg8(state, &state->registers.a, cpu_instr_nb(state));
+			cpu_instr_m(state, 4);
+			break;
+		}
+
+		case AND_n: {
+			cpu_and_reg8(state, &state->registers.a, cpu_instr_nb(state));
+			cpu_instr_m(state, 4);
+			break;
+		}
+		case OR_n: {
+			cpu_or_reg8(state, &state->registers.a, cpu_instr_nb(state));
+			cpu_instr_m(state, 4);
+			break;
+		}
+
 		case CPL_A:
 			state->registers.a = ~state->registers.a;
 			cpu_set_flags(state, cpu_is_flag(state, ZERO_FLAG), 1, 1, cpu_is_flag(state, CARRY_FLAG));
+			cpu_instr_m(state, 4);
 			break;
 
 		case ENABLE_INTERRUPTS:
@@ -114,11 +144,6 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case POP_BC:
 			state->registers.bc = stack_pop16(state);
 			cpu_instr_m(state, 3);
-			break;
-
-		case PUSH_BC:
-			stack_push16(state, state->registers.bc);
-			cpu_instr_m(state, 4);
 			break;
 		
 		case CALL_nn:
@@ -158,12 +183,30 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			mem_set16(&state->mem, cpu_instr_nw(state), state->registers.sp);
 			break;
 
+		case RET_Z: {
+			if (cpu_is_flag(state, ZERO_FLAG)) {
+				cpu_ret(state);
+			}
+
+			cpu_instr_m(state, 8);
+			break;
+		}
+
+		//Enable interrupts and return
+		case RET_I: {
+			cpu_setinterrupts(state, 1);
+			cpu_ret(state);
+			cpu_instr_m(state, 8);
+			break;
+		}
+
 		case RET_NZ:
 
 			if (!cpu_is_flag(state, ZERO_FLAG)) {
 				cpu_ret(state);
 			}
 
+			cpu_instr_m(state, 8);
 			break;
 
 		default:

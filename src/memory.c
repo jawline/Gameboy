@@ -16,6 +16,7 @@ void memory_init(memory* mem, uint8_t* rom, uint8_t* bootrom) {
 	mem->ram = malloc(8192);
 	mem->vram = malloc(8192);
 	mem->topram = malloc(0xFFFF - 0xFF80);
+	mem->ioram = malloc(0xFFFF);
 	mem->sprite_attrib = malloc(0xFEA1 - 0xFE00);
 }
 
@@ -25,7 +26,7 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 	const uint16_t SWITCH_RAM_END = 0xC000;
 	const uint16_t MAIN_RAM_END = 0xE000;
 	const uint16_t MAIN_RAM_ECHO = 0xFE00;
-	const uint16_t SPRITE_ATTRIB = 0xFFA0;
+	const uint16_t SPRITE_ATTRIB = 0xFEA0;
 	const uint16_t END_UNUSED_IO = 0xFF80;
 
 	if (off < BIOS_SIZE && mem->bootrom_enabled) {
@@ -44,60 +45,8 @@ uint8_t* ptr(memory* mem, uint16_t off) {
 	} else if (off < SPRITE_ATTRIB) {
 		return &mem->sprite_attrib[off - MAIN_RAM_ECHO];
 	} else if (off < END_UNUSED_IO) {
-
-		switch (off) {
-			case 0xFF00:
-				return &mem->p1;
-			
-			/**
-			 * Serial Data Registers
-			 */
-			case 0xFF01:
-				return &mem->sb;
-			case 0xFF02:
-				return &mem->sc;
-
-			/**
-			 * Interrupts Flag
-			 */
-			case 0xFF0F:
-				return &mem->interrupts;
-
-			case 0xFF11:
-				return &mem->nr11;
-			case 0xFF12:
-				return &mem->nr12;
-
-			case 0xFF24:
-				return &mem->nr50;
-			case 0xFF25:
-				return &mem->nr51;
-			case 0xFF26:
-				return &mem->nr52;
-
-			case 0xFF40:
-				return &mem->lcdc;
-			case 0xFF41:
-				return &mem->stat;
-			case 0xFF42:
-				return &mem->scy;
-			case 0xFF43:
-				return &mem->scx;
-			case 0xFF44:
-				return &mem->ly;
-			case 0xFF45:
-				return &mem->lyc;
-			case 0xFF47:
-				return &mem->bgp;
-			case 0xFF48:
-				return &mem->obp0;
-			case 0xFF49:
-				return &mem->obp1;
-			default:
-				printf("Bad Interrupt Register: %x\n", off);
-				return 0;
-		}
-
+		printf("Looking up IORAM %x\n", off - SPRITE_ATTRIB);
+		return &mem->ioram[off - SPRITE_ATTRIB];
 	} else if (off <= 0xFFFE) {
 		return &mem->topram[off - END_UNUSED_IO];
 	} else {

@@ -33,6 +33,18 @@ void cpu_ld_list_0x6(cpu_state* state, uint8_t gnibble) {
 	}
 }
 
+void cpu_pop_16_list(cpu_state* state, uint8_t gnibble) {
+	uint16_t* reg = cpu_reg_16_bdha(state, gnibble - 0xC);
+	*reg = stack_pop16(state);
+	cpu_instr_m(state, 4);
+}
+
+void cpu_push_16_list(cpu_state* state, uint8_t gnibble) {
+	uint16_t* reg = cpu_reg_16_bdha(state, gnibble - 0xC);
+	stack_push16(state, *reg);
+	cpu_instr_m(state, 4);
+}
+
 void cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;

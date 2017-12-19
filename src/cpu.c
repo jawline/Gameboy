@@ -49,6 +49,10 @@ void cpu_step(cpu_state* state) {
 		cpu_ld_list_0x6(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && (c_instr_lesser_nibble == 0xC || c_instr_lesser_nibble == 0xD)) {
 		cpu_grid_0x00x3_0xC0xD(state, c_instr_greater_nibble, c_instr_lesser_nibble);
+	} else if (c_instr_greater_nibble >= 0xC && c_instr_lesser_nibble == 0x5) {
+		cpu_push_16_list(state, c_instr_greater_nibble);
+	} else if (c_instr_greater_nibble >= 0xC && c_instr_lesser_nibble == 0x1) {
+		cpu_pop_16_list(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0xB) {
 		cpu_grid_dec_16(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x3) {

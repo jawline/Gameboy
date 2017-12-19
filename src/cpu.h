@@ -87,6 +87,7 @@ void cpu_rst_table_offset(cpu_state* state, uint8_t gnibble, uint16_t offset);
 /**
  * Arithmetic operations
  */
+
 void cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 void cpu_grid_0x00x3_0xC0xD(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
 void cpu_grid_arith_0x80xB_0x00x7(cpu_state* state, uint8_t gnibble, uint8_t lnibble);
@@ -120,6 +121,7 @@ void stack_push16(cpu_state* state, uint16_t v);
 uint16_t stack_pop16(cpu_state* state);
 void cpu_inc_pc(cpu_state* state, uint16_t off);
 uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off);
+uint16_t* cpu_reg_16_bdha(cpu_state* state, uint8_t off);
 uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off);
 uint8_t* cpu_reg_bcdehla(cpu_state* state, uint8_t c_instr_lesser_nibble);
 uint8_t* cpu_reg_cela(cpu_state* state, uint8_t off);
@@ -147,6 +149,9 @@ void cpu_ld_list_0x6(cpu_state* state, uint8_t gnibble);
 void cpu_ld8(cpu_state* state, uint8_t* to, uint8_t val);
 void cpu_ld_16_imm_list(cpu_state* state, uint8_t gnibble);
 void cpu_ld_8_n_list_E(cpu_state* state, uint8_t gnibble);
+
+void cpu_push_16_list(cpu_state* state, uint8_t gnibble);
+void cpu_pop_16_list(cpu_state* state, uint8_t gnibble);
 
 /**
  * CPU Jumps

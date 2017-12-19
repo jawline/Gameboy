@@ -24,17 +24,20 @@ uint8_t tile_value(cpu_state* cstate, gpu_state* gstate, uint8_t tileset, uint16
 
 void gpu_render_line(cpu_state* state, gpu_state* gstate) {
 
+	uint8_t scx = mem_get(&state->mem, SCX);
+	uint8_t scy = mem_get(&state->mem, SCY);
+
 	uint16_t map_offset = 0x8000 + 0x1C00;
-	map_offset += (state->mem.scy + gstate->line) >> 3;
+	map_offset += (scy + gstate->line) >> 3;
 
 	printf("Map Offset %x\n", map_offset);
 
-	uint16_t line_offset = state->mem.scx >> 3;
+	uint16_t line_offset = scx >> 3;
 
 	printf("Line Offset %x\n", line_offset);
 
-	uint16_t y = (gstate->line + state->mem.scy) & 7;
-	uint16_t x = (state->mem.scx) & 7;
+	uint16_t y = (gstate->line + scy) & 7;
+	uint16_t x = scx & 7;
 	uint8_t tile = mem_get(&state->mem, map_offset + line_offset);
 
 	printf("Pixel X, Y Tile %x, %x, %x\n", x, y, tile);
@@ -76,7 +79,7 @@ DRAW_MODE gpu_step(cpu_state* state, gpu_state* gstate) {
 		case HBLANK:
 			if (gstate->cycles_in_mode >= 204) {
 				gstate->line++;
-				state->mem.ly = gstate->line;
+				mem_set(&state->mem, LY, gstate->line);
 				if (gstate->line == 145) {
 					gpu_enter_mode(gstate, VBLANK);
 				} else {
@@ -87,7 +90,7 @@ DRAW_MODE gpu_step(cpu_state* state, gpu_state* gstate) {
 		case VBLANK:
 			
 			if (gstate->cycles_in_mode % 204 == 0) {
-				state->mem.ly++;
+				mem_set(&state->mem, LY, mem_get(&state->mem, LY) + 1); //Increment LY
 			}
 
 			if (gstate->cycles_in_mode >= 4560) {

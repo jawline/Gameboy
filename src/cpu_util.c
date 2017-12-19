@@ -16,6 +16,23 @@ uint8_t* cpu_reg_8_bdh(cpu_state* state, uint8_t off) {
 	exit(1);
 }
 
+uint16_t* cpu_reg_16_bdha(cpu_state* state, uint8_t off) {
+
+	switch (off) {
+		case 0:
+			return &state->registers.bc;
+		case 1:
+			return &state->registers.de;
+		case 2:
+			return &state->registers.hl;
+		case 3:
+			return &state->registers.af;
+	}
+
+	DEBUG_OUT("ERR LOOKUP 16 BIT REG\n");
+	exit(1);
+}
+
 uint16_t* cpu_reg_16_bdhs(cpu_state* state, uint8_t off) {
 
 	switch (off) {
