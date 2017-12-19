@@ -29,10 +29,17 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 			cpu_jr_flag(state, 1);
 			cpu_instr_m(state, 1);
 			break;
+
 		case JR_Z_n:
 			cpu_jr_flag(state, cpu_is_flag(state, ZERO_FLAG));
 			cpu_instr_m(state, 2);
 			break;
+
+		case JR_NC_n:
+			cpu_jr_flag(state, !cpu_is_flag(state, CARRY_FLAG));
+			cpu_instr_m(state, 2);
+			break;
+
 		case JR_NZ_n:
 			cpu_jr_flag(state, !cpu_is_flag(state, ZERO_FLAG));
 			cpu_instr_m(state, 2);
@@ -89,6 +96,11 @@ void cpu_base_table(cpu_state* state, uint8_t c_instr) {
 		case JP_NN:
 			cpu_jump(state, cpu_instr_nw(state));
 			cpu_instr_m(state, 3);
+			break;
+
+		case JP_REF_HL:
+			cpu_jump(state, mem_get16(&state->mem, state->registers.hl));
+			cpu_instr_m(state, 4);
 			break;
 
 		case CP_n: {

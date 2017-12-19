@@ -73,6 +73,7 @@ void cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 
 		if (c_instr_lesser_nibble == 0x6) {
 			*dst = mem_get(&state->mem, state->registers.hl);
+			cpu_instr_m(state, 4);
 		} else {
 			uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
 			cpu_ld8(state, dst, *src);
@@ -83,13 +84,15 @@ void cpu_ld_table_large(cpu_state* state, uint8_t c_instr) {
 		cpu_instr_m(state, 2);
 	} else {
 
+		uint8_t src;
+
 		if (c_instr_lesser_nibble == 0xE) {
-			printf("Unhandled LD (HL INSTR)\n");
-			exit(1);
+			src = mem_get(&state->mem, state->registers.hl);
+		} else {
+			src = *cpu_reg_bcdehla(state, c_instr_lesser_nibble - 0x8);
 		}
 
 		uint8_t* dst = cpu_reg_cela(state, c_instr_greater_nibble - 0x4);
-		uint8_t* src = cpu_reg_bcdehla(state, c_instr_lesser_nibble - 0x8);
-		cpu_ld8(state, dst, *src);
+		cpu_ld8(state, dst, src);
 	}
 }

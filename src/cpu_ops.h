@@ -38,9 +38,11 @@ typedef enum {
 	LDI_A_REF_HL = 0x2A,
 
 	JP_NN = 0xC3,
+	JP_REF_HL = 0xE9,
 
 	JR_n = 0x18,
 	JR_NZ_n = 0x20,
+	JR_NC_n = 0x30,
 	JR_Z_n = 0x28,
 
 	CPL_A = 0x2F,

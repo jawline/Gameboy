@@ -39,6 +39,8 @@ void cpu_step(cpu_state* state) {
 		return ext_cpu_step(state);
 	} if (c_instr >= 0x40 && c_instr < 0x80 && c_instr != HALT) {
 		cpu_ld_table_large(state, c_instr);
+	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x9) {
+		cpu_add_hl(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0x1) {
 		cpu_ld_16_imm_list(state, c_instr_greater_nibble);
 	} else if (c_instr_greater_nibble < 4 && c_instr_lesser_nibble == 0xE) {

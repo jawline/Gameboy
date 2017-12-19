@@ -25,6 +25,14 @@ void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	cpu_instr_m(state, 1);
 }
 
+void cpu_add_reg16(cpu_state* state, uint16_t* reg, uint16_t v) {
+	uint32_t carried = *reg + v;
+	uint16_t half_carry = (*reg & 0xF) + (v & 0xF);
+	*reg = *reg + v;
+	cpu_set_flags(state, *reg == 0, 0, half_carry > 256, carried > 65536); //TODO: HC
+	cpu_instr_m(state, 4);
+}
+
 void cpu_adc_reg8(cpu_state* state, uint8_t* reg, uint8_t v) {
 	cpu_add_reg8(state, reg, cpu_is_flag(state, CARRY_FLAG) ? v + 1 : v);
 }
@@ -165,6 +173,11 @@ void cpu_rlc_reg8(cpu_state* state, uint8_t* reg) {
 
 	cpu_set_flags(state, *reg == 0, 0, 0, next_carry);
 	cpu_instr_m(state, 2);
+}
+
+void cpu_add_hl(cpu_state* state, uint8_t gnibble) {
+	uint16_t* reg = cpu_reg_16_bdhs(state, gnibble);
+	cpu_add_reg16(state, &state->registers.hl, *reg);
 }
 
 void cpu_grid_xor8(cpu_state* state, uint8_t lnibble) {
