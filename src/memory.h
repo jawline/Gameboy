@@ -17,6 +17,8 @@ typedef struct {
 	uint8_t* vram;
 	uint8_t* topram;
 
+	uint8_t* sprite_attrib;
+
 	uint8_t p1;
 	uint8_t sb;
 	uint8_t sc;

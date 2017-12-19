@@ -30,7 +30,7 @@ void cpu_step(cpu_state* state) {
 	
 	uint16_t start_pc = state->registers.pc;
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
-	DEBUG_OUT("Instr 0x%02X PC(idx):%x\n", c_instr, state->registers.pc);
+	DEBUG_OUT("Instr 0x%02X PC(idx):%x\n", c_instr, start_pc);
 
 	uint8_t c_instr_greater_nibble = c_instr >> 4;
 	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;

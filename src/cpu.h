@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define DEBUG 1
+
 #ifdef DEBUG 
 #define DEBUG_OUT(...) printf(__VA_ARGS__)
 #else
