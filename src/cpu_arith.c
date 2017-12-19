@@ -70,12 +70,17 @@ void cpu_grid_0x00x3_0x40x5(cpu_state* state, uint8_t gnibble, uint8_t lnibble) 
 
 	//Row of (HL) isntructions
 	if (gnibble == 0x3) {
+		uint8_t v;
 		switch (lnibble) {
 			case 4: //Inc
-				cpu_inc_reg16(state, &state->registers.hl);
+				v = mem_get(&state->mem, state->registers.hl);
+				cpu_inc_reg8(state, &v);
+				mem_set(&state->mem, state->registers.hl, v);
 				break;
 			case 5: //Dec
-				cpu_dec_reg16(state, &state->registers.hl);
+				v = mem_get(&state->mem, state->registers.hl);
+				cpu_dec_reg8(state, &v);
+				mem_set(&state->mem, state->registers.hl, v);
 				break;
 		}
 	} else {
@@ -112,6 +117,19 @@ void cpu_grid_dec_16(cpu_state* state, uint8_t gnibble) {
 
 void cpu_grid_inc_16(cpu_state* state, uint8_t gnibble) {
 	cpu_inc_reg16(state, cpu_reg_16_bdhs(state, gnibble));
+}
+
+void cpu_swap_reg8(cpu_state* state, uint8_t* reg) {
+	printf("WARNING: SWAP UNTESTED\n");
+
+	uint8_t v = *reg;
+	uint8_t lhs = v & 0xF;
+	uint8_t rhs = v & (0xF << 4);
+	uint8_t new = (lhs << 4) + (rhs >> 4);
+
+	*reg = new;
+	cpu_set_flags(state, *reg == 0, 0, 0, 0);
+	cpu_instr_m(state, 2);
 }
 
 void cpu_rl_reg8(cpu_state* state, uint8_t* reg) {

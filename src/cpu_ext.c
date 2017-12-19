@@ -40,17 +40,31 @@ void ext_cpu_rl_8bit(cpu_state* state, uint8_t c_instr) {
 	cpu_rl_reg8(state, reg);
 }
 
+void ext_cpu_swap_8bit(cpu_state* state, uint8_t c_instr) {
+	uint8_t c_instr_lesser_nibble = c_instr & 0x0F;
+	uint8_t* reg = cpu_reg_bcdehla(state, c_instr_lesser_nibble);
+	cpu_swap_reg8(state, reg);
+}
+
+
 void ext_cpu_step(cpu_state* state) {
 
-	//DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
+	DEBUG_OUT("EXT PC=%x\n", state->registers.pc);
 	uint8_t c_instr = mem_get(&state->mem, state->registers.pc++);
-	//DEBUG_OUT("EXTInstr %x\n", c_instr);
+	DEBUG_OUT("EXTInstr %x\n", c_instr);
 
 	if (c_instr >= 0x40 && c_instr < 0x80) {
 		ext_cpu_step_bit(c_instr, state);
 	} else if (c_instr >= 0x10 && c_instr < 0x16) {
 		ext_cpu_rl_8bit(state, c_instr);
-	} else {
+	} else if (c_instr >= 0x30 && c_instr < 0x36) {
+		ext_cpu_swap_8bit(state, c_instr);
+	} else if (c_instr == 0x37) {
+		uint8_t v = mem_get(&state->mem, state->registers.hl);
+		cpu_swap_reg8(state, &v);
+		mem_set(&state->mem, state->registers.hl, v);
+	} else {	
+		printf("Fatal: Unknown EXT opcode %x\n", c_instr);
 		exit(1);
 	}
 }

@@ -98,6 +98,7 @@ void cpu_grid_inc_16(cpu_state* state, uint8_t gnibble);
 void cpu_grid_xor8(cpu_state* state, uint8_t lnibble);
 void cpu_grid_adc(cpu_state* state, uint8_t lnibble);
 
+void cpu_swap_reg8(cpu_state* state, uint8_t* reg);
 void cpu_add_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
 void cpu_sub_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
 void cpu_and_reg8(cpu_state* state, uint8_t* reg, uint8_t v);
