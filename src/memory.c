@@ -68,7 +68,7 @@ uint16_t mem_get16(memory* mem, uint16_t off) {
 
 void mem_set(memory* mem, uint16_t off, uint8_t v) {
 	
-	if (off >= 0x2000 & off <= 0x3FFF) {
+	if ((off >= 0x2000) && (off <= 0x3FFF)) {
 		printf("WARN: UNHANDLED RAM BANK SELECT %x", v);
 		return;
 	}

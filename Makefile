@@ -11,6 +11,7 @@ INSTALL_EXE_PATH = /usr/bin/
 INSTALL_LIB_PATH = /usr/lib/
 
 #Compiler settings
+CC=gcc
 CFLAGS=-DDEBUG -c -Wall -ggdb -std=c11 -I/usr/local/Cellar/sdl2/2.0.6/include/
 LDFLAGS=-ggdb -I/usr/local/Cellar/sdl2/2.0.6/include/ -L/usr/local/Cellar/sdl2/2.0.6/lib/ -lSDL2
 
@@ -30,7 +31,7 @@ clean:
 	-@rm -r $(OBJ_DIR) $(EXECUTABLE)
 
 test: clean all
-	$(EXECUTABLE) ~/bios.gb ~/test.gb
+	$(EXECUTABLE) ~/gb/bios.gb ~/gb/test.gb
 
 #The executable rule compiles the set of objects into the target executable
 $(EXECUTABLE): $(OBJECTS)

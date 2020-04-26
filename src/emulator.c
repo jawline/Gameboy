@@ -2,7 +2,7 @@
 #include "romloader.h"
 #include <stdint.h>
 
-#define BIOS_ENABLED 0
+#define BIOS_ENABLED 1
 
 char emu_init(cpu_state* state, gpu_state* gstate, char* title, char const* bios, char const* rom) {
 	uint8_t* romdat = rom_load(rom, ROM_SIZE);
